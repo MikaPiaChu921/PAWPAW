@@ -4,6 +4,9 @@ import Input from "../../components/formElements/Input";
 import Button from "../../components/buttons/Button";
 import { RedirectTo } from "../../components/utilities/PageUtils";
 import FileInput from "../../components/formElements/FileInput";
+import { UserData } from "../../components/utilities/models/UserData";
+import { RegisterOrganization } from "../../components/utilities/services/AuthenticationHandler";
+import { ApplicationConstants } from "../../contants/ApplicationConstants";
 
 function SignUpOrganizationPage() {
   const [lastname, setLastname] = useState("");
@@ -19,14 +22,18 @@ function SignUpOrganizationPage() {
   }
 
   function SignUpSubmit() {
-    console.log({
-      lastname,
-      firstname,
+    var userData = new UserData({
+      lastName: lastname,
+      firstName: firstname,
       email,
       password,
-      contactNumber,
+      contactNumber: contactNumber,
       address,
     });
+
+    var result = RegisterOrganization(userData);
+    alert(result);
+    RedirectTo(ApplicationConstants.ROUTE_LOGIN);
   }
 
   return (
@@ -101,7 +108,7 @@ function SignUpOrganizationPage() {
             <div className="my-3">
               <Input
                 containerClassname={"w-[330px]"}
-                type="number"
+                type="text"
                 placeholder={"Address"}
                 name="address"
                 value={address}

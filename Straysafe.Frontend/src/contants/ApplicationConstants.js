@@ -16,6 +16,7 @@ export const ApplicationConstants = {
     ROUTE_SIGNUP_AS_ORGANIZATION: "/sign-up-as-organization",
     ROUTE_SIGNUP_AS: "/sign-up-as",
     ROUTE_ADOPT_PET: "/adopt-pet",
+    ROUTE_ADMIN_DASHBOARD: "/admin",
     ROUTE_VIEW_PET_PROFILE: (id) => `/adopt-pet/profile/${id}`,
     ROUTE_ADD_PET_FOR_ADOPTION: "/adopt-pet/add",
     LANDING_PAGE_ABOUT_1: `
@@ -26,4 +27,10 @@ export const ApplicationConstants = {
         creating a more efficient and responsive system.
     `,
     LANDING_PAGE_ABOUT_2: `Many of our adoptables from the streets of Cebu City need loving homes. By adopting, you give them a chance to find the love and security they deserve.`
+}
+
+export const AuthConstants = {
+    ROLE_STRAYVER: "Strayver",
+    ROLE_ORGANIZATION: "Organization",
+    ROLE_ADMIN: "Admin"
 }

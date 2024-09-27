@@ -1,3 +1,4 @@
+import { AuthConstants } from "../../../../contants/ApplicationConstants";
 import  {UserData}  from "../../models/UserData";
 import { GetLocalData, SaveLocalData } from "../LocalDataHandler"
 
@@ -8,7 +9,14 @@ export class AccountRepository{
      * @returns {Array<UserData>}
      */
     GetAccounts(){
-        return GetLocalData("accounts") ?? [];
+        return GetLocalData("accounts") ?? [new UserData(
+            {
+                uid:1,
+                email: "admin",
+                password: "P@ssw0rd",
+                role: AuthConstants.ROLE_ADMIN
+            }
+        )];
     }
     /**
      * @param {(a: UserData)=>{}} predicate 
