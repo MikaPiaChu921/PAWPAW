@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  font-family: 'Poppins', sans-serif;
+}
+
+.primary-1{
+  color: #1794A1;
+}
+
+.brand-orange{
+  color: #FF6700;
+}
+
+.hidden{
+  display: none;
+}
