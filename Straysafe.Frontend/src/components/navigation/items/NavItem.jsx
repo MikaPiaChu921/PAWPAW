@@ -5,8 +5,9 @@ function NavItem({
   itemName,
   itemIcon,
   active,
-  hoverBackgroundColor = "#1794A1",
+  activeBackgroundColor = "#1794A1",
   hoverTextColor = "text-white",
+  highlightColor = "#bcf0f5",
   disabled,
   onClick,
 }) {
@@ -18,10 +19,10 @@ function NavItem({
           if (onClick) onClick(e);
         }}
         className={`flex items-center p-2 text-gray-900 rounded-lg ${
-          active === itemName && `bg-[${hoverBackgroundColor}]`
+          active === itemName && `bg-[${activeBackgroundColor}]`
         } ${
           !disabled &&
-          `hover:bg-[${hoverBackgroundColor}] hover:${hoverTextColor} dark:hover:hover:bg-[${hoverBackgroundColor}] cursor-pointer`
+          `hover:bg-[${highlightColor}] hover:${hoverTextColor} cursor-pointer`
         }  group`}
       >
         <i className={itemIcon}></i>

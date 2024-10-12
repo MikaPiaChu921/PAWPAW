@@ -20,7 +20,7 @@ function SignUpStraverPage() {
     setShowPassword(!showPassword);
   }
 
-  function SignUpSubmit() {
+  async function SignUpSubmit() {
     var userData = new UserData({
       lastName: lastname,
       firstName: firstname,
@@ -30,7 +30,7 @@ function SignUpStraverPage() {
       address,
     });
 
-    var result = RegisterStraver(userData);
+    var result = await RegisterStraver(userData);
     alert(result);
     RedirectTo(ApplicationConstants.ROUTE_LOGIN);
   }

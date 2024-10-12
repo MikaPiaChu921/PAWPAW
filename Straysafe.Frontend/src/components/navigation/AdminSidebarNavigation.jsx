@@ -3,7 +3,7 @@ import NavItem from "./items/NavItem";
 import { LogoutAccount } from "../utilities/services/AuthenticationHandler";
 import { ApplicationConstants } from "../../contants/ApplicationConstants";
 
-function AdminSidebarNavigation() {
+function AdminSidebarNavigation({ setActiveDashboard, activeDashboard }) {
   return (
     <div>
       <aside
@@ -19,18 +19,46 @@ function AdminSidebarNavigation() {
         </div>
         <div className="h-full px-3 py-4 overflow-y-auto">
           <ul className="space-y-2 font-medium">
-            <NavItem itemName="Home" />
-            <NavItem itemName="User Activities" />
-            <NavItem itemName="Announcements" />
-            <NavItem itemName="Reports" />
-            <NavItem itemName="Users" />
-            <NavItem itemName="Donation" />
+            <NavItem
+              itemName="Home"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
+            <NavItem
+              itemName="User Activities"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
+            <NavItem
+              itemName="Announcements"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
+            <NavItem
+              itemName="Reports"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
+            <NavItem
+              itemName="Users"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
+            <NavItem
+              itemName="Donation"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
             <NavItem itemName=" " disabled />
-            <NavItem itemName="Notifications" />
+            <NavItem
+              itemName="Notifications"
+              callBack={setActiveDashboard}
+              active={activeDashboard}
+            />
             <NavItem
               itemName="Logout"
               onClick={LogoutAccount}
-              hoverBackgroundColor="#FF0000"
+              highlightColor="#ff1a1a"
             />
           </ul>
         </div>

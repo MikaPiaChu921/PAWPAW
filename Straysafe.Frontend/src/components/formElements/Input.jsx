@@ -31,7 +31,7 @@ function Input({
             name={name ?? Math.random() + ""}
             placeholder={placeholder}
             className={defaultStyle}
-            value={val}
+            value={value ?? val}
             onInput={(e) => {
               if (set) set(e.target.value);
               setVal(e.target.value);

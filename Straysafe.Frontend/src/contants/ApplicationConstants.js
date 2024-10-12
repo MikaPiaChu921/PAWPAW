@@ -3,12 +3,14 @@ import StraySafeLogo2 from "/logo/straysafe_logo_2.png";
 import LandingPageImage from "../assets/images/landing/landingimg.png";
 import SampleCardImg from "../assets/images/samples/catImg.png";
 import LandingPageImage_Adopt from "../assets/images/landing/adoptimage.png"
+import UserActivityCardImg from "../assets/images/admin/UserActivityCard.jfif";
 
 export const ApplicationConstants = {
     StraySafeLogo1,
     StraySafeLogo2,
     LandingPageImage,
     LandingPageImage_Adopt,
+    UserActivityCardImg,
     SampleCardImg,
     ROUTE_LOGIN: "login",
     ROUTE_LANDING: "/",
@@ -17,8 +19,16 @@ export const ApplicationConstants = {
     ROUTE_SIGNUP_AS: "/sign-up-as",
     ROUTE_ADOPT_PET: "/adopt-pet",
     ROUTE_ADMIN_DASHBOARD: "/admin",
+    ROUTE_ANNOUNCEMENT: "/announcement",
+    ROUTE_CHAT: "/chat",
+    ROUTE_ORG_REPORTS: "/reports",
+    ROUTE_CHAT_STRAYVER: "/chat-org",
     ROUTE_VIEW_PET_PROFILE: (id) => `/adopt-pet/profile/${id}`,
     ROUTE_ADD_PET_FOR_ADOPTION: "/adopt-pet/add",
+    ROUTE_PROFILE: "/profile",
+    ROUTE_REPORT_STRAY: "/report_stray",
+    ROUTE_REPORT_STRAY_HISTORY: "/report_stray_history",
+    DEFAULT_PROFILE: "DEFAULT_PROFILE",
     LANDING_PAGE_ABOUT_1: `
         "StraySafe" is designed to address animal welfare by offering a
         comprehensive, community-based platform to streamline the processes
@@ -33,4 +43,31 @@ export const AuthConstants = {
     ROLE_STRAYVER: "Strayver",
     ROLE_ORGANIZATION: "Organization",
     ROLE_ADMIN: "Admin"
+}
+
+export const APIUrl = "http://localhost:5077";
+export const ChatHubUrl = "http://localhost:5077/chathub"
+
+export const API_LINKS = {
+    USER_GET: (id) => APIUrl + `/user/get?id=${id}`,
+    USER_LOGIN_URL: APIUrl + "/user/login",
+    USER_REGISTER_URL: APIUrl + "/user/register",
+    USER_GET_ALL: APIUrl + "/user/getall",
+    USER_DELETE: APIUrl + "/user/delete",
+    USER_UPDATE: APIUrl + "/user/update",
+    MEDIA_UPLOAD: APIUrl + "/media/upload",
+    MEDIA_DOWNLOAD: (filename, isProfile = false) => APIUrl + `/media/download?fileName=${filename}&isProfile=${isProfile}`,
+    MEDIA_HAS: (filename) => APIUrl + `/media/has?fileName=${filename}`,
+    REPORT_STRAY_GET: (id) => APIUrl + `/reportstray/get?Id=${id}`,
+    REPORT_STRAY_DELETE: (id) => APIUrl + `/reportstray/delete?Id=${id}`,
+    REPORT_STRAY_GETALL: APIUrl + "/reportstray/getall",
+    REPORT_STRAY_ADD: APIUrl + "/reportstray/add",
+    REPORT_STRAY_UPDATE: APIUrl + "/reportstray/update",
+    CHAT_SUBMIT: APIUrl + "/chat/submit",
+    CHAT_GET_LATEST: (infoId) => APIUrl + `/chat/getlatest?chatInformation=${infoId}`,
+    CHAT_GET_FIRST: (infoId) => APIUrl + `/chat/getfirst?chatInformation=${infoId}`,
+    ANNOUNCEMENT_GETALL_URL: APIUrl + "/announcement/getall",
+    ANNOUNCEMENT_ADD_URL: APIUrl + "/announcement/add",
+    ANNOUNCEMENT_DELETE_URL: (id)=> APIUrl + `/announcement/delete?announcementId=${id}`,
+    ANNOUNCEMENT_UPDATE_URL: APIUrl + "/announcement/update",
 }

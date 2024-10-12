@@ -1,22 +1,22 @@
-import { AuthConstants } from "../../../../contants/ApplicationConstants";
+import { API_LINKS } from "../../../../contants/ApplicationConstants";
 import  {UserData}  from "../../models/UserData";
-import { GetLocalData, SaveLocalData } from "../LocalDataHandler"
 
 export class AccountRepository{
     constructor(){}
     /**
      * 
-     * @returns {Array<UserData>}
+     * @returns {Promise<Array<UserData>>}
      */
-    GetAccounts(){
-        return GetLocalData("accounts") ?? [new UserData(
-            {
-                uid:1,
-                email: "admin",
-                password: "P@ssw0rd",
-                role: AuthConstants.ROLE_ADMIN
-            }
-        )];
+    async GetAccounts(){
+        const response = await fetch(API_LINKS.USER_GET_ALL, { method: "GET"});
+        const data = await response.json();
+        return data;
+    }
+
+    async Login(email, password){
+        const response = await fetch(API_LINKS.USER_LOGIN_URL, { method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({email: email, password: password})});
+        const data = await response.json();
+        return data;
     }
     /**
      * @param {(a: UserData)=>{}} predicate 
@@ -29,16 +29,52 @@ export class AccountRepository{
      * 
      * @param {UserData} userAccount 
      */
-    SaveAccount(userAccount){
-        var accounts = this.GetAccounts();
+    async SaveAccount(userAccount){
+        const response = await fetch(API_LINKS.USER_REGISTER_URL, 
+            {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(userAccount)
+            }
+        )
 
-        if(accounts.filter((a) => a.ID === userAccount.ID || a.Email === userAccount.Email).length > 0){
-            return false;
-        }
+        const result = await response.json();
 
-        accounts.push(userAccount);
+        return result.success;
+    }
 
-        SaveLocalData("accounts", accounts);
-        return true;
+    /**
+     * 
+     * @param {string} id 
+     * @returns {Promise<boolean>}
+     */
+    async DeleteAccount(id){
+        const response = await fetch(API_LINKS.USER_DELETE+`?Id=${id}`, 
+            {
+                method: "DELETE",
+            }
+        )
+
+        const result = await response.json();
+
+        return result.success;
+    }
+
+    /**
+     * 
+     * @param {UserData} userAccount 
+     */
+    async UpdateAccount(userAccount){
+        const response = await fetch(API_LINKS.USER_UPDATE, 
+            {
+                method: "PATCH",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(userAccount)
+            }
+        )
+
+        const result = await response.json();
+
+        return result.success;
     }
 }

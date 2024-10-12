@@ -21,7 +21,7 @@ function SignUpOrganizationPage() {
     setShowPassword(!showPassword);
   }
 
-  function SignUpSubmit() {
+  async function SignUpSubmit() {
     var userData = new UserData({
       lastName: lastname,
       firstName: firstname,
@@ -31,7 +31,7 @@ function SignUpOrganizationPage() {
       address,
     });
 
-    var result = RegisterOrganization(userData);
+    var result = await RegisterOrganization(userData);
     alert(result);
     RedirectTo(ApplicationConstants.ROUTE_LOGIN);
   }
@@ -116,7 +116,10 @@ function SignUpOrganizationPage() {
               />
             </div>
             <div className="my-3">
-              <FileInput containerClassname={"w-[330px]"} />
+              <FileInput
+                containerClassname={"w-[330px]"}
+                placeholder={"Attach your Certificate of Accreditation"}
+              />
             </div>
 
             <div className="text-center mt-8">

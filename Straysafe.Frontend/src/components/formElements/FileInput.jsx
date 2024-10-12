@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 
-function FileInput({ className, containerClassname, set }) {
+function FileInput({ className, containerClassname, set, placeholder }) {
   const [file, setFile] = useState();
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
@@ -55,9 +55,7 @@ function FileInput({ className, containerClassname, set }) {
               </p>
             </div>
             <div className="text-[12px] h-[20px] text-center ml-4">
-              <p className="primary-1">
-                {fileName || "Attach your Certificate of Accreditation"}
-              </p>
+              <p className="primary-1">{fileName || placeholder}</p>
             </div>
           </div>
         </div>

@@ -13,32 +13,35 @@ export const GetProfileInformation = () => {
 }
 
 export const DisplayName = ({msg_before = "", msg_after = ""}) => {
-    return `${msg_before} ${GetProfileInformation().FirstName} ${msg_after}`;
+    return `${msg_before} ${GetProfileInformation().firstName} ${msg_after}`;
 }
 
-export const LoginAccount = ({username, password}) => {
+export const LoginAccount = async ({username, password}) => {
     // initialize repository
     var accountRespository = new AccountRepository();
 
     // retrieve account
-    const foundAccount = accountRespository.GetSingleAccount((account) => account.Email.toLowerCase() === username.toLowerCase() && account.Password === password);
+    const loginResponse = await accountRespository.Login(username, password);
 
-    if(foundAccount){
-        // handle locked account
-        if(foundAccount.Locked && foundAccount.Role === AuthConstants.ROLE_ORGANIZATION){
+    // handle data
+    if(loginResponse.data){
+        const foundAccount = loginResponse.data;
+
+        if(foundAccount.locked && foundAccount.role === AuthConstants.ROLE_ORGANIZATION){
             alert("You're account is locked and under review by admins");
             return;
         }
         // hide some information in the view
         const minifiedAccount = {
-            Email: foundAccount.Email,
-            FirstName: foundAccount.FirstName,
-            LastName: foundAccount.LastName,
-            Role: foundAccount.Role
+            email: foundAccount.email,
+            firstName: foundAccount.firstName,
+            lastName: foundAccount.lastName,
+            role: foundAccount.role,
+            id: foundAccount.id
         }
         SaveLocalData("loggedInAccount", minifiedAccount);
 
-        if(foundAccount.Role === AuthConstants.ROLE_ADMIN) {
+        if(foundAccount.role === AuthConstants.ROLE_ADMIN) {
             RedirectTo(ApplicationConstants.ROUTE_ADMIN_DASHBOARD);
             return;
         }
@@ -57,16 +60,14 @@ export const LogoutAccount = () => {
 /**
  * 
  * @param {UserData} user 
- * @returns {string} msg
+ * @returns {Promise<string>} msg
  */
-export const RegisterStraver = (user) => {
+export const RegisterStraver = async (user) => {
     // initialize repository
     var accountRespository = new AccountRepository();
     var msg = "User has been registered";
 
-    // generate a random ID for new user
-    user.ID = Math.floor(Math.max(Math.random() * 99999, Math.random() * 10000));
-    var result = accountRespository.SaveAccount(user);
+    var result = await accountRespository.SaveAccount(user);
     
     if(!result)
         msg = "Failed to register user, a duplicate email has found";
@@ -77,18 +78,16 @@ export const RegisterStraver = (user) => {
 /**
  * 
  * @param {UserData} user 
- * @returns {string} msg
+ * @returns {Promise<string>} msg
  */
-export const RegisterOrganization = (user) => {
+export const RegisterOrganization = async (user) => {
     // initialize repository
     var accountRespository = new AccountRepository();
     var msg = "Your account is currently under review and will be verified by an admin shortly. You will receive a confirmation once the process is complete.";
 
-    // generate a random ID for new user
-    user.ID = Math.floor(Math.max(Math.random() * 99999, Math.random() * 10000));
-    user.Locked = true;
-    user.Role = AuthConstants.ROLE_ORGANIZATION;
-    var result = accountRespository.SaveAccount(user);
+    user.locked = true;
+    user.role = AuthConstants.ROLE_ORGANIZATION;
+    var result = await accountRespository.SaveAccount(user);
     
     if(!result)
         msg = "Failed to register user, a duplicate email has found";

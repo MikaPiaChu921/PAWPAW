@@ -1,12 +1,19 @@
 export class PetData{
-    constructor({name, animalType, gender, weight, height, breed, address, remarks}){
-        this.Name = name ?? "";
-        this.AnimalType = animalType ?? "";
-        this.Gender = gender ?? "";
-        this.Weight = weight ?? 0;
-        this.Height = height ?? 0;
-        this.Breed = breed ?? "";
-        this.Address = address ?? "";
-        this.Remarks = remarks ?? "";
+    constructor({name, animalType, gender, weight, height, reportType, breed, address, remarks, reporter, organization, status}){
+        this.name = name ?? "";
+        this.animalType = animalType ?? "";
+        this.gender = gender ?? "";
+        this.weight = weight ?? 0;
+        this.height = height ?? 0;
+        this.reportType = reportType ?? "";
+        this.breed = breed ?? "";
+        this.address = address ?? "";
+        this.remarks = remarks ?? "";
+        this.reporter = reporter ?? "";
+        this.organization = organization ?? "";
+        this.status = status ?? "";
+        this.reportDate = new Date().toISOString();
+        this.metadata = "";
+        this.owner = "";
     }
 }

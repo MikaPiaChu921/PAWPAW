@@ -28,7 +28,7 @@ function LandingPage() {
             From Stray to Stray: Open Your Heart, Open Your Home!
           </h1>
         </div>
-        <MobileView className="px-8 mt-4 min-w-[380px] items-center">
+        <MobileView className="px-8 mt-4 min-w-[380px] items-center" message="">
           <p className="italic justify-center">
             {ApplicationConstants.LANDING_PAGE_ABOUT_1}
           </p>
