@@ -78,19 +78,29 @@ function ChatContainer({ minified = false }) {
           const newChatInfoArray = [];
           // user enter the chat
           for (let chatInfo of data) {
+            // filter chat info only with the current user
+            let loggedInUserId = GetProfileInformation().id;
+            if (!chatInfo.metadata.includes(loggedInUserId)) continue;
+
             let latestChat = await GetLatestChat(chatInfo.chatInfo);
+            if (latestChat.latest === null) continue;
+
             chatInfo.latest = latestChat.latest;
 
             let firstChat = GetValue(chatInfo.chatInfo + "first");
             if (firstChat === null) {
               firstChat = await GetFirstChat(chatInfo.chatInfo);
               AddToKeyV(chatInfo.chatInfo + "first", firstChat);
-              console.log("calling first ," + chatInfo.chatInfo);
             }
             chatInfo.first = firstChat.first;
 
             let sender = GetValue("sender" + firstChat.first?.sender);
-            if (sender === null) {
+
+            if (
+              firstChat.first !== null &&
+              sender === null &&
+              firstChat.first?.sender != null
+            ) {
               if (firstChat.first?.sender !== undefined) {
                 if (firstChat.first?.sender !== GetProfileInformation().id)
                   sender = await RetrieveSingleAccount(firstChat.first?.sender);
@@ -117,21 +127,20 @@ function ChatContainer({ minified = false }) {
         const switchChat = searchParams.get("sw");
 
         // let's retrieve user information
-        const user1Id = !switchChat ? str : org;
-        const user2Id = !switchChat ? org : str;
+        const user1Id = GetProfileInformation().id === org ? str : org;
+        const user2Id = GetProfileInformation().id !== org ? org : str;
 
         let user1 = GetValue(user1Id);
-        if (user1 === null) {
+        if (user1 === null && user1Id != null) {
           user1 = await RetrieveSingleAccount(user1Id);
           AddToKeyV(user1Id, user1);
-          console.log("registering user 1");
         }
 
         let user2 = GetValue(user2Id);
-        if (user2 === null) {
+        if (user2 === null && user1Id != null) {
           user2 = await RetrieveSingleAccount(user2Id);
+
           AddToKeyV(user1Id, user1);
-          console.log("registering user 2");
         }
 
         setFocusChat({ user1, user2 });
@@ -169,13 +178,12 @@ function ChatContainer({ minified = false }) {
 
   const handleSubmitChat = () => {
     if (inputMessage === "") return;
-    const switchChat = searchParams.get("sw");
     const org = searchParams.get("og");
     const str = searchParams.get("st");
     let payload = new ChatData({
       chatInfo: chatInformation.chatInfo,
-      sender: !switchChat ? str : org,
-      recepient: !switchChat ? org : str,
+      sender: GetProfileInformation().id === str ? str : org,
+      recepient: GetProfileInformation().id !== org ? org : str,
       message: inputMessage,
       type: "msg",
     });
@@ -213,17 +221,13 @@ function ChatContainer({ minified = false }) {
                   topic={chatInfo.topic}
                   lastMessage={`${chatInfo.latest?.message || ""}`}
                   profilePhoto={
-                    (chatInfo.first?.sender &&
-                      API_LINKS.MEDIA_DOWNLOAD(chatInfo.first?.sender, true)) ||
-                    API_LINKS.MEDIA_DOWNLOAD(
-                      ApplicationConstants.DEFAULT_PROFILE,
-                      true
-                    )
+                    chatInfo.first?.sender &&
+                    API_LINKS.MEDIA_DOWNLOAD(chatInfo.sender?.id, true)
                   }
                   onClick={() => {
                     RedirectTo(
                       ApplicationConstants.ROUTE_CHAT_STRAYVER +
-                        `?tp=${metaData[1]}&og=${metaData[3]}&st=${metaData[2]}&sw=false`
+                        `?tp=${metaData[1]}&og=${metaData[3]}&st=${metaData[2]}`
                     );
                   }}
                 />
@@ -255,6 +259,7 @@ function ChatContainer({ minified = false }) {
                       !chatInfo.metadata.includes(userProfile.id)
                     )
                       return <div key={chatInfo.id}></div>;
+                    console.log(chatInfo.sender);
                     return (
                       <ChatUser
                         key={chatInfo.id}
@@ -264,8 +269,8 @@ function ChatContainer({ minified = false }) {
                         topic={chatInfo.topic}
                         lastMessage={`${chatInfo.latest?.message || ""}`}
                         profilePhoto={
-                          chatInfo.first?.sender &&
-                          API_LINKS.MEDIA_DOWNLOAD(chatInfo.first?.sender)
+                          chatInfo.sender.id &&
+                          API_LINKS.MEDIA_DOWNLOAD(chatInfo.sender.id, true)
                         }
                         onClick={() => {
                           RedirectTo(

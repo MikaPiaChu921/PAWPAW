@@ -22,8 +22,8 @@ namespace Straysafe.Backend.Controllers
             user.Password = Hasher.HashSHA512(user.Password);
             bool result = await _repository.AddAsync(user);
 
-            if (result) return Ok(new { Message = "User has been Registered", Success = result});
-            return BadRequest(new { Message = "Failed to Register User", Success = result });
+            if (result) return Ok(new { Message = "User has been Registered", Success = result, user.Id});
+            return BadRequest(new { Message = "Failed to Register User", Success = result, user.Id });
         }
 
         [HttpGet("GetAll")]

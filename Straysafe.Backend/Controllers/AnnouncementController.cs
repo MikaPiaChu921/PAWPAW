@@ -6,18 +6,15 @@ namespace Straysafe.Backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AnnouncementController(ILogger<AnnouncementController> logger, IRepository<Announcement> announcementRepository, IRepositoryExtension<AnnouncementMetadata> announcementMetadataRepository) : Controller
+    public class AnnouncementController(IServiceProvider serviceProvider) : BaseController(serviceProvider)
     {
-        private readonly ILogger<AnnouncementController> _logger = logger;
-        private readonly IRepository<Announcement> _announcementRepository = announcementRepository;
-        private readonly IRepositoryExtension<AnnouncementMetadata> _announcementMetadataRepository = announcementMetadataRepository;
-
-
         [HttpPost("add")]
         public async Task<IActionResult> PostAnnouncement([FromBody] Announcement announcement)
         {
             announcement.Attachment = Guid.NewGuid().ToString();
-            var okResult = await _announcementRepository.AddAsync(announcement);
+            var okResult = await AnnouncementRepository.AddAsync(announcement);
+
+            AddNotification(announcement.PostedBy, "Announcement", "posted an announcement");
 
             if (okResult) 
                 return Ok(new
@@ -36,7 +33,7 @@ namespace Straysafe.Backend.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteAnnouncement([FromQuery] Guid announcementId)
         {
-            var okResult = await _announcementRepository.DeleteAsync(announcementId);
+            var okResult = await AnnouncementRepository.DeleteAsync(announcementId);
 
             if (okResult)
                 return Ok(new
@@ -54,7 +51,7 @@ namespace Straysafe.Backend.Controllers
         [HttpPatch("Update")]
         public async Task<IActionResult> UpdateAnnouncement([FromBody] Announcement announcement)
         {
-           var existingAnnouncement = await _announcementRepository.GetAsync(announcement.Id);
+           var existingAnnouncement = await AnnouncementRepository.GetAsync(announcement.Id);
            if (existingAnnouncement == null) return NotFound(new { Message = "Cannot find an existing announcement to update", Success = false });
 
             if (!string.IsNullOrEmpty(announcement.Title))
@@ -64,7 +61,10 @@ namespace Straysafe.Backend.Controllers
             if (!string.IsNullOrEmpty(announcement.Attachment))
                 existingAnnouncement.Attachment = announcement.Attachment;
 
-            bool result = await _announcementRepository.UpdateAsync(existingAnnouncement);
+
+            AddNotification(announcement.PostedBy, "Announcement", "updated an announcement");
+
+            bool result = await AnnouncementRepository.UpdateAsync(existingAnnouncement);
             if (!result) return BadRequest(new { Message = "Failed to Update announcement", Success = false });
             return Ok(new { Message = "Updated announcement", Success = true });
         }
@@ -72,7 +72,7 @@ namespace Straysafe.Backend.Controllers
         [HttpGet("getall")]
         public IActionResult GetAllAnnouncement()
         {
-            return Ok(new { Message = "Announcements Retrieved", Data = _announcementRepository.GetAll(), Success = true });
+            return Ok(new { Message = "Announcements Retrieved", Data = AnnouncementRepository.GetAll().OrderByDescending(d => d.Date), Success = true });
         }
 
     }

@@ -1,6 +1,7 @@
 import { API_LINKS } from "../../../contants/ApplicationConstants"
 import { AnnouncementData } from "../models/AnnouncementData";
 import { ChatData } from "../models/chatUtility/ChatData";
+import Donation from "../models/Donation";
 import { PetData } from "../models/PetData"
 import { UserData } from "../models/UserData";
 
@@ -172,4 +173,40 @@ export const HasFile = async (fileName) => {
     const response = await fetch(API_LINKS.MEDIA_HAS(fileName));
     const data = await response.json();
     return data.success;
+}
+
+/**
+ * 
+ * @returns {Promise<Array<Notification>>}
+ */
+export const GetNotifications = async () => {
+    const response = await fetch(API_LINKS.NOTIFICATION_GETALL);
+    const data = await response.json();
+    return data.data;
+}
+
+
+/**
+ * 
+ * @returns {Promise<Array<Donation>>}
+ */
+export const GetDonations = async () => {
+    const response = await fetch(API_LINKS.DONATIONS_GETALL);
+    const data = await response.json();
+    return data.data;
+}
+
+/**
+ * @param {Donation} donation
+ * @returns {Promise<any>}
+ */
+export const SubmitDonation = async (donation) => {
+    const content = {
+        method: "POST",
+        headers: { "content-type": "application/json"},
+        body: JSON.stringify(donation)
+    }
+    const response = await fetch(API_LINKS.DONATIONS_ADD, content);
+    const data = await response.json();
+    return data;
 }

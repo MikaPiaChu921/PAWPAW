@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../../../components/formElements/Input";
 import PageContainer from "../../../components/containers/PageContainer";
 import TableView from "../../../components/containers/TableView";
+import { GetNotifications } from "../../../components/utilities/services/DataHandler";
 
 function NotificationsDashboard() {
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      let notifData = await GetNotifications();
+      let tempData = [];
+      for (let data of notifData) {
+        tempData.push([data.description]);
+      }
+      console.log(tempData);
+      setNotifications(tempData);
+    })();
+  }, []);
   return (
     <PageContainer>
       <div className="grid grid-cols-4 items-center my-8">
@@ -25,10 +39,7 @@ function NotificationsDashboard() {
       </div>
       <TableView
         TableHeader={[]}
-        TableRows={[
-          ["Organization A has posted an announcement"],
-          ["User A has reported a stray animal."],
-        ]}
+        TableRows={notifications}
         OnClickActions={null}
         rowClassName="text-left border-b-[1px] border-black p-2 text-lg"
       />

@@ -86,11 +86,7 @@ function UsersDashboard() {
             "Address",
           ]}
           TableRows={[...userData]}
-          OnClickActions={[
-            () => {
-              alert("Hello Jay");
-            },
-          ]}
+          OnClickActions={null}
         />
       </PageContainer>
     </div>

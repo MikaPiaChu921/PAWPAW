@@ -22,7 +22,7 @@ namespace Straysafe.Backend
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<DatabaseContext>( options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<DatabaseContext>( options => options.UseSqlServer("Server=mssql;Database=PAWPAW-DB;Trusted_Connection=False;TrustServerCertificate=True;User Id=sa;Password=MsSql123"));
 
             builder.Services.AddScoped<IRepository<User>, UserRepository>();
             builder.Services.AddScoped<IRepository<Reports>, ReportRepository>();
@@ -30,6 +30,8 @@ namespace Straysafe.Backend
             builder.Services.AddScoped<IRepository<ChatData>, ChatDataRepository>();
             builder.Services.AddScoped<IRepository<Announcement>, AnnouncementRepository>();
             builder.Services.AddScoped<IRepositoryExtension<AnnouncementMetadata>, AnnouncementMetadataRepository>();
+            builder.Services.AddScoped<IRepository<Notification>, NotificationRepository>();
+            builder.Services.AddScoped<IRepository<Donation>, DonationRepository>();
 
             builder.Services.AddSingleton<SessionSingleton>();
 
@@ -39,12 +41,35 @@ namespace Straysafe.Backend
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            // db migration
+            using (var scope = app.Services.CreateScope())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                bool running = false;
+
+                while (!running)
+                {
+                    try
+                    {
+                        Console.WriteLine("Attepting to run");
+                        Task.Delay(5000).Wait();
+                        Console.WriteLine("Creating Scope | DatabaseContext");
+                        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+                        // ensure that database is created and up-to-date on app run
+                        Console.WriteLine("Database - Migration - Creation");
+                        dbContext?.Database.EnsureCreated();
+                        Console.WriteLine("App Run");
+                        running = true;
+                    }
+                    catch(Exception e) {
+                        Console.WriteLine($"Error connecting to database: {e.Message}");
+                    }
+                }
             }
+
+            // Configure the HTTP request pipeline.
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowCredentials().AllowAnyHeader());
 

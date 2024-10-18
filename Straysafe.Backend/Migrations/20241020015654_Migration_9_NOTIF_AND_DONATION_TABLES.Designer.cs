@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Straysafe.Backend.Data;
 
@@ -11,9 +12,11 @@ using Straysafe.Backend.Data;
 namespace Straysafe.Backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241020015654_Migration_9_NOTIF_AND_DONATION_TABLES")]
+    partial class Migration_9_NOTIF_AND_DONATION_TABLES
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -295,12 +298,12 @@ namespace Straysafe.Backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ee531b35-fed3-42ca-a295-4d723db77fee"),
+                            Id = new Guid("6d2e42b2-045a-4339-8431-5acefe1c16d7"),
                             Address = "",
                             ContactNumber = "",
                             Email = "admin",
-                            FirstName = "System",
-                            LastName = "Administrator",
+                            FirstName = "",
+                            LastName = "",
                             Locked = false,
                             Password = "6BFCC4026B5F162799A6DC8305C09DB9C1674AC616BD5C7422A45FBB6D0816AC163047C47A1F426F4F4C6B5B5042C671EABC4FDC7310FD5B183EEF59DC274604",
                             Role = "Admin"

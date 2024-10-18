@@ -80,13 +80,37 @@ function Header() {
             {loggedInAccount?.role !== AuthConstants.ROLE_ORGANIZATION && (
               <>
                 <div className="text-center w-auto font-bold hidden sm:block">
-                  <Button default>Lost Pets</Button>
+                  <Button
+                    onClick={() =>
+                      RedirectTo(
+                        ApplicationConstants.ROUTE_PET_REPORT_PAGE("lost-pets")
+                      )
+                    }
+                    default
+                  >
+                    Lost Pets
+                  </Button>
                 </div>
                 <div className="text-center w-auto font-bold hidden sm:block">
-                  <Button default>Found Pets</Button>
+                  <Button
+                    onClick={() =>
+                      RedirectTo(
+                        ApplicationConstants.ROUTE_PET_REPORT_PAGE("found-pets")
+                      )
+                    }
+                    default
+                  >
+                    Found Pets
+                  </Button>
                 </div>
                 <div className="text-center w-auto mx-4">
-                  <Button>Donate</Button>
+                  <Button
+                    onClick={() =>
+                      RedirectTo(ApplicationConstants.ROUTE_DONATION)
+                    }
+                  >
+                    Donate
+                  </Button>
                 </div>
               </>
             )}
@@ -169,12 +193,28 @@ function Header() {
         )}
 
         <div>
-          <Button className="text-lg border-b-2 w-[100%] text-left" default>
+          <Button
+            className="text-lg border-b-2 w-[100%] text-left"
+            onClick={() =>
+              RedirectTo(
+                ApplicationConstants.ROUTE_PET_REPORT_PAGE("lost-pets")
+              )
+            }
+            default
+          >
             Lost Pets
           </Button>
         </div>
         <div>
-          <Button className="text-lg border-b-2 w-[100%] text-left" default>
+          <Button
+            className="text-lg border-b-2 w-[100%] text-left"
+            onClick={() =>
+              RedirectTo(
+                ApplicationConstants.ROUTE_PET_REPORT_PAGE("found-pets")
+              )
+            }
+            default
+          >
             Found Pets
           </Button>
         </div>

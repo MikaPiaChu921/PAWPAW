@@ -1,0 +1,45 @@
+version: "3.4"
+
+services:
+  backend-pawpaw:
+    container_name: backend_pawpaw
+    build:
+      context: Straysafe.Backend/
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+      - 8081:8081
+    depends_on:
+      - mssql
+    networks:
+      - mssql_net
+
+  frontend-pawpaw:
+    container_name: frontend_pawpaw
+    build: 
+      context: Straysafe.Frontend/
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+
+  # DATABASE
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: MsSql123
+    restart: always
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - mssql_net
+  
+volumes:
+  mssql_data:
+
+networks:
+  mssql_net:
+    driver: bridge

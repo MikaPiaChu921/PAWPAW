@@ -38,6 +38,7 @@ namespace Straysafe.Backend.Controllers
             // locate  all the files
             var files = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "files"), "*.*");
             var directoryFileName = "";
+            List<string> extensions = [];
             if (files.Length > 0)
             {
                 foreach (var file in files)
@@ -46,14 +47,14 @@ namespace Straysafe.Backend.Controllers
                     {
                         var fileExtension = file.Split(fileName)[1];
                         directoryFileName = fileName + fileExtension;
-                        break;
+                        extensions.Add(fileExtension);
                     }
                 }
             }
 
-            if (string.IsNullOrEmpty(directoryFileName)) return NotFound(new { Message = "File not found", Success = false });
+            if (string.IsNullOrEmpty(directoryFileName)) return NotFound(new { Message = "File not found", Success = false, extensions });
 
-            return Ok(new { Message = "File Exists", Success = true });
+            return Ok(new { Message = "File Exists", Success = true, extensions });
         }
 
         [HttpGet("Download")]

@@ -72,6 +72,7 @@ export class AccountRepository{
                 body: JSON.stringify(userAccount)
             }
         )
+        console.log(JSON.stringify(userAccount))
 
         const result = await response.json();
 

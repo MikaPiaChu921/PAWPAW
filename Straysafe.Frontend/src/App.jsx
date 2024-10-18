@@ -17,6 +17,10 @@ import ReportStrayPage from "./pages/report/ReportStrayPage";
 import ReportStrayHistory from "./pages/report/ReportStrayHistory";
 import ReportStrayInformation from "./pages/report/ReportStrayInformation";
 import StrayverChat from "./pages/StrayverChat";
+import PetReportPage from "./pages/strayver_views/PetReportPage";
+import DonationPage from "./pages/DonationPage";
+import PetReportViewPetProfilePage from "./pages/strayver_views/PetReportViewPetProfilePage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -84,6 +88,25 @@ function App() {
             <Route
               path={ApplicationConstants.ROUTE_REPORT_STRAY + "/:id"}
               element={<ReportStrayInformation />}
+            />
+            <Route
+              path={ApplicationConstants.ROUTE_PET_REPORT_PAGE(":type")}
+              element={<PetReportPage />}
+            />
+            <Route
+              path={ApplicationConstants.ROUTE_PET_REPORT_PAGE(
+                ":type",
+                ":value"
+              )}
+              element={<PetReportViewPetProfilePage />}
+            />
+            <Route
+              path={ApplicationConstants.ROUTE_DONATION}
+              element={<DonationPage />}
+            />
+            <Route
+              path={ApplicationConstants.ROUTE_PROFILE}
+              element={<ProfilePage />}
             />
             <Route
               path="*"

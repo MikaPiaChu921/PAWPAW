@@ -20,7 +20,7 @@ function ChatUser({
           src={profilePhoto}
         />
       </div>
-      <div className="flex items-center cursor-pointer w-auto">
+      <div className="flex items-center cursor-pointer w-[70%]">
         <div className="overflow-clip w-auto">
           <h1 className="px-2 font-bold text-xl">
             {displayName} <p className="text-xs text-orange-500">{topic}</p>

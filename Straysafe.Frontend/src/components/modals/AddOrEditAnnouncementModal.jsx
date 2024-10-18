@@ -22,6 +22,7 @@ function AddOrEditAnnouncementModal({
   showOrClose,
   announcementData,
   refresh,
+  removeBlurBg,
 }) {
   const [title, setTitle] = useState(
     (announcementData && announcementData.title) || ""
@@ -75,7 +76,11 @@ function AddOrEditAnnouncementModal({
   };
 
   return (
-    <div className="absolute top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-[99999]">
+    <div
+      className={`absolute top-0 left-0 w-full h-screen ${
+        !removeBlurBg && "bg-[rgba(0,0,0,0.1)]"
+      } z-[99999]`}
+    >
       <div className="relative w-[400px] h-auto left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] bg-white rounded-xl overflow-hidden">
         <div className="text-right">
           <Button

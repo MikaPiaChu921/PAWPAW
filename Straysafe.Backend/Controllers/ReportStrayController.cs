@@ -6,12 +6,8 @@ namespace Straysafe.Backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ReportStrayController(ILogger<ReportStrayController> logger, IRepository<Reports> repository, IRepository<Announcement> announcementRepo, IRepository<User> userRepo) : Controller
+    public class ReportStrayController(IServiceProvider serviceProvider) : BaseController(serviceProvider)
     {
-        private readonly IRepository<Reports> _repository = repository;
-        private readonly IRepository<Announcement> _announcementRepo = announcementRepo;
-        private readonly IRepository<User> _userRepo = userRepo;
-        private readonly ILogger<ReportStrayController> _logger = logger;
 
         [HttpGet("get")]
         public async Task<IActionResult> Get([FromQuery] string Id)
@@ -20,7 +16,7 @@ namespace Straysafe.Backend.Controllers
 
             if (!parseStatus) return BadRequest(new { Message = "Failed to parse Id to GUID", Success = false });
 
-            var report = await _repository.GetAsync(reportId);
+            var report = await ReportRepository.GetAsync(reportId);
 
             if (report == null) return NotFound(new { Message = "No report found", Success = false });
             return Ok(new { Data = report, Success = true, Message = "Retrieved report" });
@@ -29,7 +25,7 @@ namespace Straysafe.Backend.Controllers
         [HttpGet("getall")]
         public IActionResult GetAllReports([FromQuery] string reporter = "", [FromQuery] string organization = "")
         {
-            var reports = _repository.GetAll();
+            var reports = ReportRepository.GetAll();
 
             if (!string.IsNullOrEmpty(reporter)) reports = reports.Where(x => x.Reporter.ToLower().Equals(reporter.ToLower()));
             if (!string.IsNullOrEmpty(organization)) reports = reports.Where(x => x.Organization.ToLower().Equals(organization.ToLower()));
@@ -40,8 +36,8 @@ namespace Straysafe.Backend.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddReport([FromBody] Reports report)
         {
-            var result = await _repository.AddAsync(report);
-            var reporter = await _userRepo.GetAsync(Guid.Parse(report.Reporter));
+            var result = await ReportRepository.AddAsync(report);
+            var reporter = await UserRepository.GetAsync(Guid.Parse(report.Reporter));
 
             if (result && reporter != null)
             {
@@ -56,7 +52,10 @@ namespace Straysafe.Backend.Controllers
                 };
 
                 // save announcement
-                await _announcementRepo.AddAsync(announcement);
+                await AnnouncementRepository.AddAsync(announcement);
+
+                // add notification
+                AddNotification(report.Reporter, "Report", $"reported a '{report.ReportType}' animal");
             }
 
             if (result)
@@ -71,7 +70,7 @@ namespace Straysafe.Backend.Controllers
 
             if (!parseStatus) return BadRequest(new { Message = "Failed to parse Id to GUID", Success = false });
 
-            bool result = await _repository.DeleteAsync(reportId);
+            bool result = await ReportRepository.DeleteAsync(reportId);
 
             if (result) return Ok(new { Message = "Report deleted successfully", Success = true });
             return BadRequest(new { Message = "Failed to delete report, not found!", Success = false });
@@ -80,7 +79,7 @@ namespace Straysafe.Backend.Controllers
         [HttpPatch("update")]
         public async Task<IActionResult> Update([FromBody] Reports report)
         {
-            var existingReport = await _repository.GetAsync(report.Id);
+            var existingReport = await ReportRepository.GetAsync(report.Id);
 
             if (existingReport == null) return NotFound(new { Message = "Report not found, could not update", Success = false });
 
@@ -109,11 +108,14 @@ namespace Straysafe.Backend.Controllers
                 existingReport.Metadata = report.Metadata;
             if (!string.IsNullOrEmpty(report.Owner))
                 existingReport.Owner = report.Owner;
-            if (!string.IsNullOrEmpty(report.Organization))
+            if (!string.IsNullOrEmpty(report.Organization)){
                 existingReport.Organization = report.Organization;
 
+                // add notification
+                AddNotification(report.Organization, "Report", $"updated report status for report '{report.Name}' to status: '{report.Status}'");
+            }
 
-            bool result = await _repository.UpdateAsync(existingReport);
+            bool result = await ReportRepository.UpdateAsync(existingReport);
             if (!result) return BadRequest(new { Message = "Failed to Update Report", Success = false });
             return Ok(new { Message = "Updated report", Success = true, NewData = existingReport });
         }

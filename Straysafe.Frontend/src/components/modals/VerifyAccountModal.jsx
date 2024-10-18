@@ -33,6 +33,7 @@ function VerifyAccountModal({
       await repo.DeleteAccount(organization.id);
     } else if (createOrganization && accept) {
       organization.locked = false;
+      organization.password = "";
       await repo.UpdateAccount(organization);
     }
 
@@ -95,6 +96,8 @@ function VerifyAccountModal({
                   orgName={ug.firstName + " " + ug.lastName}
                   address={ug.address}
                   email={ug.email}
+                  attachmentId={ug.id}
+                  fileName={ug.lastName + "-attachment"}
                   contactNumber={ug.contactNumber}
                   acceptCallback={() => {
                     triggerAction(true, ug);

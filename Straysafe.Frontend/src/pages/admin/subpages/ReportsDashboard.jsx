@@ -1,35 +1,32 @@
 import React, { useEffect, useState } from "react";
-import PageContainer from "../../../components/containers/PageContainer";
 import Input from "../../../components/formElements/Input";
-import DateRange from "../../../components/formElements/DateRange";
-import SelectInput from "../../../components/formElements/SelectInput";
 import DashboardReportCard from "../../../components/cards/DashboardReportCard";
 import { Chart } from "chart.js/auto";
+import PageContainer from "../../../components/containers/PageContainer";
+import {
+  GetNotifications,
+  RetrieveReports,
+} from "../../../components/utilities/services/DataHandler";
+import { getMonth } from "../../../components/utilities/PageUtils";
 
 function ReportsDashboard() {
-  const [dateFrom, setDateFrom] = useState(undefined);
-  const [dateTo, setDateTo] = useState(undefined);
-  const [animalType, setAnimalType] = useState(undefined);
   const [reportsChart, setReportChart] = useState(null);
+  const [foundPetCount, setFoundPetCount] = useState(0);
+  const [lostPetCount, setLostPetCount] = useState(0);
+  const [strayPetCount, setStrayPetCount] = useState(0);
+  const [chartDataset, setChartDataset] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     (async function () {
-      const data = [
-        { year: 2010, count: 10 },
-        { year: 2011, count: 20 },
-        { year: 2012, count: 15 },
-        { year: 2013, count: 25 },
-        { year: 2014, count: 22 },
-        { year: 2015, count: 30 },
-        { year: 2016, count: 28 },
-      ];
+      const data = chartDataset;
 
-      if (!reportsChart) {
+      if (!reportsChart && chartDataset) {
         setReportChart(
-          new Chart("graph-b", {
+          new Chart("graph-a", {
             type: "bar",
             data: {
-              labels: data.map((row) => row.year),
+              labels: data.map((row) => row.month),
               datasets: [
                 {
                   label: "Reported Strays per Month",
@@ -41,9 +38,65 @@ function ReportsDashboard() {
         );
       }
     })();
-  }, [reportsChart]);
+  }, [reportsChart, chartDataset]);
+
+  useEffect(() => {
+    (async () => {
+      // load reports
+      var reports = await RetrieveReports();
+
+      setFoundPetCount(
+        reports.filter((r) => r.reportType.toLowerCase().includes("found"))
+          .length
+      );
+      setLostPetCount(
+        reports.filter((r) => r.reportType.toLowerCase().includes("lost"))
+          .length
+      );
+      setStrayPetCount(
+        reports.filter((r) => r.reportType.toLowerCase().includes("stray"))
+          .length
+      );
+      const reportedStray = reports.filter((r) =>
+        r.reportType.toLowerCase().includes("stray")
+      );
+
+      const currentMonthIndex = new Date().getMonth();
+      const kv = {
+        [`${getMonth(currentMonthIndex)}`]: 0,
+        [`${getMonth(currentMonthIndex - 1)}`]: 0,
+        [`${getMonth(currentMonthIndex - 2)}`]: 0,
+        [`${getMonth(currentMonthIndex - 3)}`]: 0,
+        [`${getMonth(currentMonthIndex - 4)}`]: 0,
+      };
+
+      for (let report of reportedStray) {
+        let existingMonth =
+          kv[getMonth(new Date(report.reportDate).getMonth())];
+
+        if (existingMonth >= 0) {
+          kv[getMonth(new Date(report.reportDate).getMonth())] += 1;
+        }
+      }
+      let arrDt = [];
+
+      for (let x in kv) {
+        arrDt.push({ month: x, count: kv[x] });
+      }
+
+      setChartDataset(arrDt.reverse());
+
+      // load notifications
+      const notifications = await GetNotifications();
+      const sorted = notifications.sort(
+        (a, b) => new Date(b.created) - new Date(a.created)
+      );
+      setNotifications(sorted.slice(0, 10));
+    })();
+  }, []);
+
   return (
-    <div className="mb-4">
+    <div>
       <PageContainer>
         <div className="grid grid-cols-4 items-center my-8">
           <h3 className="col-span-1 text-[25px] primary-1 font-bold">
@@ -62,59 +115,26 @@ function ReportsDashboard() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2">
-          <DateRange
-            className="col-span-1"
-            inputClassname="w-[160px]"
-            setFrom={setDateFrom}
-            setTo={setDateTo}
-          />
-          <div className="grid grid-cols-3 col-span-1 gap-2">
-            <SelectInput
-              className="col-span-1"
-              icon="fa-solid fa-paw"
-              options={["Dog", "Cat"]}
-              placeholder={"Animal Type"}
-              selectedOption={setAnimalType}
-            />
-            <SelectInput
-              className="col-span-1"
-              icon="fa-solid fa-bullhorn"
-              placeholder="Report Type"
-            />
-            <SelectInput
-              className="col-span-1"
-              icon="fa-solid fa-user"
-              placeholder="User Type"
-            />
-          </div>
-        </div>
         <div className="grid grid-cols-3 gap-1 justify-items-center my-8">
-          <DashboardReportCard title="Found Pets" value={25} />
-          <DashboardReportCard title="Lost Pets" value={34} />
-          <DashboardReportCard title="Reported Strays" value={59} />
+          <DashboardReportCard title="Found Pets" value={foundPetCount} />
+          <DashboardReportCard title="Lost Pets" value={lostPetCount} />
+          <DashboardReportCard title="Reported Strays" value={strayPetCount} />
         </div>
+
         <div className="grid grid-cols-2 justify-items-center my-8">
           <div className="primary-1 text-left shadow-md w-[350px] p-4 md:col-span-1 col-span-2">
-            <p className="text-[20px] font-bold">HISTORY</p>
-            <p className="text-[12px] mt-2 border-b-2 border-gray-300">
-              Organization A has posted an announcement
-            </p>
-            <p className="text-[12px] mt-2 border-b-2 border-gray-300">
-              User A has reported a stray animal
-            </p>
-            <p className="text-[12px] mt-2 border-b-2 border-gray-300">
-              User B has posted a lost pet
-            </p>
-            <p className="text-[12px] mt-2 border-b-2 border-gray-300">
-              User C has posted a found animal
-            </p>
-            <p className="text-[12px] mt-2 border-b-2 border-gray-300">
-              Organization B has posted an animal for adoption
-            </p>
+            <p className="text-[20px] font-bold">NOTIFICATIONS</p>
+            {notifications.map((notif, index) => (
+              <p
+                key={index}
+                className="text-[12px] mt-2 border-b-2 border-gray-300"
+              >
+                {notif.description}
+              </p>
+            ))}
           </div>
           <div className="primary-1 text-left shadow-md w-[350px] p-4 md:col-span-1 col-span-2">
-            <canvas id="graph-b"></canvas>
+            <canvas id="graph-a"></canvas>
           </div>
         </div>
       </PageContainer>

@@ -6,7 +6,12 @@ import { RedirectTo } from "../../components/utilities/PageUtils";
 import FileInput from "../../components/formElements/FileInput";
 import { UserData } from "../../components/utilities/models/UserData";
 import { RegisterOrganization } from "../../components/utilities/services/AuthenticationHandler";
-import { ApplicationConstants } from "../../contants/ApplicationConstants";
+import {
+  API_LINKS,
+  ApplicationConstants,
+} from "../../contants/ApplicationConstants";
+import { AccountRepository } from "../../components/utilities/services/repositories/AccountRepository";
+import { UploadFile } from "../../components/utilities/media/UploadFileUtil";
 
 function SignUpOrganizationPage() {
   const [lastname, setLastname] = useState("");
@@ -16,12 +21,25 @@ function SignUpOrganizationPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [file, setFile] = useState(null);
 
   function showPasswordCallback() {
     setShowPassword(!showPassword);
   }
 
   async function SignUpSubmit() {
+    if (file === null) {
+      alert("Please add your attachment");
+      return;
+    }
+    if (email === "") {
+      alert("Email is required");
+      return;
+    }
+    if (password === "") {
+      alert("Password is required");
+      return;
+    }
     var userData = new UserData({
       lastName: lastname,
       firstName: firstname,
@@ -32,8 +50,19 @@ function SignUpOrganizationPage() {
     });
 
     var result = await RegisterOrganization(userData);
-    alert(result);
-    RedirectTo(ApplicationConstants.ROUTE_LOGIN);
+    if (result) {
+      // retrieve account
+      const accRepo = new AccountRepository();
+      const data = (await accRepo.GetAccounts()).filter(
+        (a) => a.email === userData.email
+      )[0];
+      if (data) {
+        // upload file
+        await UploadFile(API_LINKS.MEDIA_UPLOAD, file, "org-" + data.id);
+      }
+      alert(result);
+      RedirectTo(ApplicationConstants.ROUTE_LOGIN);
+    }
   }
 
   return (
@@ -119,6 +148,7 @@ function SignUpOrganizationPage() {
               <FileInput
                 containerClassname={"w-[330px]"}
                 placeholder={"Attach your Certificate of Accreditation"}
+                set={setFile}
               />
             </div>
 

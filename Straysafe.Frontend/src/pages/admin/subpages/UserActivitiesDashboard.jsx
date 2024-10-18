@@ -5,107 +5,154 @@ import SelectInput from "../../../components/formElements/SelectInput";
 import Input from "../../../components/formElements/Input";
 import CardContainer from "../../../components/containers/CardContainer";
 import UserActivityCard from "../../../components/cards/UserActivityCard";
+import { RetrieveReports } from "../../../components/utilities/services/DataHandler";
+import { API_LINKS } from "../../../contants/ApplicationConstants";
+import { AccountRepository } from "../../../components/utilities/services/repositories/AccountRepository";
+import ViewReportDetailModal from "../../../components/modals/admin/ViewReportDetailModal";
 
+function CheckDateBetween(
+  from = new Date(),
+  to = new Date(),
+  current = new Date()
+) {
+  return current >= from && current <= to;
+}
+
+function CreateDateTo() {
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + 24);
+  return new Date(currentDate);
+}
+
+function GetTypeColor(type) {
+  if (type.toLowerCase().includes("stray")) return "bg-red-500";
+  if (type.toLowerCase().includes("posted")) return "bg-green-500";
+  if (type.toLowerCase().includes("lost")) return "bg-blue-500";
+  if (type.toLowerCase().includes("found")) return "bg-yellow-500";
+}
 function UserActivitiesDashboard() {
   const [dateFrom, setDateFrom] = useState(undefined);
   const [dateTo, setDateTo] = useState(undefined);
   const [animalType, setAnimalType] = useState(undefined);
+  const [reportType, setReportType] = useState(undefined);
+  const [reports, setReports] = useState([]);
+  const [modalData, setModalData] = useState(undefined);
 
   useEffect(() => {
-    console.log({ dateFrom, dateTo });
-    console.log("Selected: " + animalType);
-  }, [dateFrom, dateTo, animalType]);
+    (async () => {
+      let data = await RetrieveReports();
+
+      if (animalType && animalType !== "All") {
+        data = data.filter(
+          (d) => d.animalType.toLowerCase() === animalType.toLowerCase()
+        );
+      }
+
+      if (reportType && reportType !== "All") {
+        data = data.filter(
+          (d) => d.reportType.toLowerCase() === reportType.toLowerCase()
+        );
+      }
+
+      if (dateFrom || dateTo) {
+        let df = new Date(dateFrom ?? new Date());
+        let dt = new Date(dateTo ?? CreateDateTo());
+
+        data = data.filter((d) =>
+          CheckDateBetween(df.toISOString(), dt.toISOString(), d.reportDate)
+        );
+      }
+
+      // add userdata to report
+      let accRepo = new AccountRepository();
+      const users = await accRepo.GetAccounts();
+
+      for (let rep of data) {
+        rep.reporter = users.filter((a) => a.id === rep.reporter)[0];
+
+        if (rep.organization) {
+          rep.organization = users.filter((a) => a.id === rep.organization)[0];
+        }
+      }
+
+      setReports(data);
+    })();
+  }, [dateFrom, dateTo, animalType, reportType]);
   return (
-    <div className="mb-4">
-      <PageContainer>
-        <div className="grid grid-cols-4 items-center my-8">
-          <h3 className="col-span-1 text-[25px] primary-1 font-bold">
-            User Activities
-          </h3>
-          <div />
-          <div className="col-span-2">
-            <Input
-              containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
-              type="text"
-              placeholder="Search for something..."
-              icon={"fa-solid fa-magnifying-glass"}
-              iconClicked={() => {
-                alert("search");
-              }}
-            />
+    <>
+      {modalData && (
+        <ViewReportDetailModal reportData={modalData} set={setModalData} />
+      )}
+      <div className="mb-4">
+        <PageContainer>
+          <div className="grid grid-cols-4 items-center my-8">
+            <h3 className="col-span-1 text-[25px] primary-1 font-bold">
+              User Activities
+            </h3>
+            <div />
+            <div className="col-span-2">
+              <Input
+                containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
+                type="text"
+                placeholder="Search for something..."
+                icon={"fa-solid fa-magnifying-glass"}
+                iconClicked={() => {
+                  alert("search");
+                }}
+              />
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 mb-5">
-          <DateRange
-            className="col-span-1"
-            inputClassname="w-[160px]"
-            setFrom={setDateFrom}
-            setTo={setDateTo}
-          />
-          <div className="grid grid-cols-3 col-span-1 gap-2">
-            <SelectInput
+          <div className="grid grid-cols-2 mb-5">
+            <DateRange
               className="col-span-1"
-              icon="fa-solid fa-paw"
-              options={["Dog", "Cat"]}
-              placeholder={"Animal Type"}
-              selectedOption={setAnimalType}
+              inputClassname="w-[160px]"
+              setFrom={setDateFrom}
+              setTo={setDateTo}
             />
-            <SelectInput
-              className="col-span-1"
-              icon="fa-solid fa-bullhorn"
-              placeholder="Report Type"
-            />
-            <SelectInput
-              className="col-span-1"
-              icon="fa-solid fa-user"
-              placeholder="User Type"
-            />
+            <div className="grid grid-cols-3 col-span-1 gap-2">
+              <SelectInput
+                className="col-span-1"
+                icon="fa-solid fa-paw"
+                options={["Dog", "Cat", "All"]}
+                placeholder={"Animal Type"}
+                selectedOption={setAnimalType}
+              />
+              <SelectInput
+                className="col-span-1"
+                icon="fa-solid fa-bullhorn"
+                placeholder="Report Type"
+                options={["Stray", "Lost", "Found", "All"]}
+                selectedOption={setReportType}
+              />
+            </div>
           </div>
-        </div>
-        <CardContainer>
-          <UserActivityCard
-            cardImage="https://imgix.bustle.com/uploads/getty/2018/7/10/f1969dc5-bc9b-4b28-8268-7dc44e3815dd-getty-511712140.jpg?w=1200&h=630&fit=crop&crop=faces&fm=jpg"
-            cardType="Stray"
-            typeColor="bg-red-500"
-            informationValue={[
-              ["Posted by", "User 1"],
-              ["Animal Type", "Dog"],
-              ["Date Posted", "May 1, 2025 8:13am"],
-            ]}
-          />
-          <UserActivityCard
-            cardImage="https://th.bing.com/th/id/OIP.guY_RHVXOBIU2v_IMA3ABAHaEK?rs=1&pid=ImgDetMain"
-            cardType="Adoption"
-            typeColor="bg-green-500"
-            informationValue={[
-              ["Posted by", "MARO Organization"],
-              ["Animal Type", "Dog"],
-              ["Date Posted", "May 1, 2025 8:13am"],
-            ]}
-          />
-          <UserActivityCard
-            cardImage="https://th.bing.com/th/id/R.d50688743fab4e9d86d2bf01bc24fe86?rik=e52CfOJ8jQfwTQ&pid=ImgRaw&r=0"
-            cardType="Lost"
-            typeColor="bg-blue-500"
-            informationValue={[
-              ["Posted by", "User 2"],
-              ["Animal Type", "Dog"],
-              ["Date Posted", "May 1, 2025 8:13am"],
-            ]}
-          />
-          <UserActivityCard
-            cardImage="https://th.bing.com/th/id/R.cd10bd6edf5c1fa7e23d7f217430be3a?rik=Fw9iUgsGgVTT9Q&pid=ImgRaw&r=0"
-            cardType="Stray"
-            typeColor="bg-red-500"
-            informationValue={[
-              ["Posted by", "User 3"],
-              ["Animal Type", "Dog"],
-              ["Date Posted", "May 1, 2025 8:13am"],
-            ]}
-          />
-        </CardContainer>
-      </PageContainer>
-    </div>
+          <div className="h-[80vh] overflow-y-auto">
+            <CardContainer>
+              {reports.map((report) => (
+                <UserActivityCard
+                  key={report.id}
+                  cardImage={API_LINKS.MEDIA_DOWNLOAD(report.id)}
+                  cardType={report.reportType}
+                  typeColor={GetTypeColor(report.reportType)}
+                  informationValue={[
+                    [
+                      "Reported By",
+                      `${report.reporter.firstName} ${report.reporter.lastName}`,
+                    ],
+                    ["Animal Type", report.animalType],
+                    ["Date Posted", new Date(report.reportDate).toDateString()],
+                    ["Status", report.status],
+                  ]}
+                  onClick={() => {
+                    setModalData(report);
+                  }}
+                />
+              ))}
+            </CardContainer>
+          </div>
+        </PageContainer>
+      </div>
+    </>
   );
 }
 

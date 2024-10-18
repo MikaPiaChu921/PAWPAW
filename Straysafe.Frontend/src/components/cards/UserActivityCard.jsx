@@ -7,6 +7,7 @@ function UserActivityCard({
   typeColor = "bg-orange-300",
   informationValue = [],
   cardImage = ApplicationConstants.UserActivityCardImg,
+  onClick,
 }) {
   return (
     <div className="relative w-auto h-auto bg-gray-200 px-4 pt-10 py-2 rounded-xl shadow-lg">
@@ -28,7 +29,9 @@ function UserActivityCard({
         </div>
       ))}
       <div className="text-center my-4">
-        <Button className="text-xs">View Report Details</Button>
+        <Button className="text-xs" onClick={onClick}>
+          View Report Details
+        </Button>
       </div>
     </div>
   );

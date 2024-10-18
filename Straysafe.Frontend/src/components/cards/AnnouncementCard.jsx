@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AnnouncementData } from "../utilities/models/AnnouncementData";
 import Button from "../buttons/Button";
 import {
@@ -18,6 +18,20 @@ function AnnouncementCard({
   actionCallback,
   onClick = () => {},
 }) {
+  const [hasVideo, setHasVideo] = useState(false);
+  useEffect(() => {
+    (async () => {
+      var hasFile = await (
+        await fetch(API_LINKS.MEDIA_HAS(AnnouncementData.attachment))
+      ).json();
+      if (hasFile.success) {
+        if (hasFile.extensions.includes(".mp4")) {
+          setHasVideo(true);
+        }
+      }
+    })();
+  }, [AnnouncementData]);
+
   return (
     <div className="relative w-100 bg-gray-100 rounded-xl p-4 shadow-sm my-2">
       <h1 className="font-bold text-lg block sm:hidden">
@@ -30,14 +44,25 @@ function AnnouncementCard({
             onClick(AnnouncementData);
           }}
         >
-          <img
-            className="object-cover w-full h-full"
-            src={
-              (AnnouncementData &&
-                API_LINKS.MEDIA_DOWNLOAD(AnnouncementData.attachment)) ||
-              API_LINKS.MEDIA_DOWNLOAD(ApplicationConstants.DEFAULT_PROFILE)
-            }
-          />
+          {!hasVideo ? (
+            <img
+              className="h-full w-full object-cover"
+              src={
+                AnnouncementData &&
+                API_LINKS.MEDIA_DOWNLOAD(AnnouncementData.attachment, true)
+              }
+            />
+          ) : (
+            <>
+              <img
+                className="h-full w-full object-cover"
+                src={
+                  AnnouncementData &&
+                  API_LINKS.MEDIA_DOWNLOAD("DEFAULT_PROFILE")
+                }
+              />
+            </>
+          )}
         </div>
         <div
           className="w-[300px] md:w-[80%] p-2"
