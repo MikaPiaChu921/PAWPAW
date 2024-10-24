@@ -52,68 +52,72 @@ function SignUpStraverPage() {
               Please input your information correctly
             </p>
 
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type="text"
-                placeholder={"Last Name"}
-                name="lastname"
-                value={lastname}
-                set={setLastname}
-              />
-            </div>
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type="text"
-                placeholder={"First Name"}
-                name="firstname"
-                value={firstname}
-                set={setFirstname}
-              />
-            </div>
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type="email"
-                placeholder={"Email"}
-                name="email"
-                value={email}
-                set={setEmail}
-              />
-            </div>
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type={showPassword ? "text" : "password"}
-                placeholder={"Password"}
-                name="password"
-                iconClicked={showPasswordCallback}
-                set={setPassword}
-                value={password}
-                icon={"fa-solid fa-eye"}
-              />
-            </div>
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type="number"
-                placeholder={"Contact Number"}
-                name="contactnum"
-                value={contactNumber}
-                set={setContactNumber}
-              />
-            </div>
-            <div className="my-3">
-              <Input
-                containerClassname={"w-[340px]"}
-                type="text"
-                placeholder={"Address"}
-                name="address"
-                value={address}
-                set={setAddress}
-              />
-            </div>
+            <form>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type="text"
+                  placeholder={"Last Name"}
+                  name="lastname"
+                  value={lastname}
+                  set={setLastname}
+                />
+              </div>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type="text"
+                  placeholder={"First Name"}
+                  name="firstname"
+                  value={firstname}
+                  set={setFirstname}
+                />
+              </div>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type="email"
+                  placeholder={"Email"}
+                  name="email"
+                  value={email}
+                  set={setEmail}
+                  autoComplete={"username"}
+                />
+              </div>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type={showPassword ? "text" : "password"}
+                  placeholder={"Password"}
+                  name="password"
+                  iconClicked={showPasswordCallback}
+                  set={setPassword}
+                  value={password}
+                  icon={"fa-solid fa-eye"}
+                  autoComplete={"current-password"}
+                />
+              </div>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type="number"
+                  placeholder={"Contact Number"}
+                  name="contactnum"
+                  value={contactNumber}
+                  set={setContactNumber}
+                />
+              </div>
+              <div className="my-3">
+                <Input
+                  containerClassname={"w-[340px]"}
+                  type="text"
+                  placeholder={"Address"}
+                  name="address"
+                  value={address}
+                  set={setAddress}
+                />
+              </div>
+            </form>
 
             <div className="text-center mt-8">
               <Button className={"w-[150px] my-2"} onClick={SignUpSubmit}>

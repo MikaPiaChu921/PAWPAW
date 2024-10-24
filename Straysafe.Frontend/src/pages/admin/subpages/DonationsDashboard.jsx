@@ -30,7 +30,7 @@ function DonationsDashboard() {
           Honation History
         </h3>
         <div />
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <Input
             containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
             type="text"
@@ -40,7 +40,7 @@ function DonationsDashboard() {
               alert("search");
             }}
           />
-        </div>
+        </div> */}
       </div>
       <TableView
         TableHeader={["Amount", "Donation Date", "Remarks"]}

@@ -13,6 +13,7 @@ function Input({
   onClick,
   checked,
   containerClassname,
+  autoComplete,
 }) {
   const [val, setVal] = useState(value);
   let defaultStyle = `${className} px-3 py-2 bg-white border shadow-sm border-[#1794A1] placeholder-[#1794A1] focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm`;
@@ -36,6 +37,7 @@ function Input({
               if (set) set(e.target.value);
               setVal(e.target.value);
             }}
+            autoComplete={autoComplete}
           />
         ) : (
           <input
@@ -44,6 +46,9 @@ function Input({
             className={defaultStyle}
             checked={checked}
             onClick={() => {
+              if (onClick) onClick();
+            }}
+            onChange={() => {
               if (onClick) onClick();
             }}
           />

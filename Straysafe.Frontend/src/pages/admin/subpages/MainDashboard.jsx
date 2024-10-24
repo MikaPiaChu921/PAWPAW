@@ -103,17 +103,6 @@ function MainDashboard() {
             Dashboard
           </h3>
           <div />
-          <div className="col-span-2">
-            <Input
-              containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
-              type="text"
-              placeholder="Search for something..."
-              icon={"fa-solid fa-magnifying-glass"}
-              iconClicked={() => {
-                alert("search");
-              }}
-            />
-          </div>
         </div>
         <div className="grid grid-cols-3 gap-1 justify-items-center my-8">
           <DashboardReportCard title="Found Pets" value={foundPetCount} />

@@ -60,7 +60,7 @@ function UsersDashboard() {
         <div className="grid grid-cols-4 items-center my-8">
           <h3 className="col-span-1 text-[25px] primary-1 font-bold">Users</h3>
           <div />
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <Input
               containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
               type="text"
@@ -70,7 +70,7 @@ function UsersDashboard() {
                 alert("search");
               }}
             />
-          </div>
+          </div> */}
         </div>
         <div className="w-100 text-right">
           <Button className="text-sm" onClick={showModal}>

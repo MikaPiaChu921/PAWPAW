@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ApplicationConstants,
   AuthConstants,
@@ -9,10 +9,34 @@ import {
   GetProfileInformation,
   LogoutAccount,
 } from "../utilities/services/AuthenticationHandler";
+import { GetAllAnnouncements } from "../utilities/services/DataHandler";
+import {
+  GetLocalData,
+  SaveLocalData,
+} from "../utilities/services/LocalDataHandler";
 
 function Header() {
   const loggedInAccount = GetProfileInformation();
   const [showCollapsibleNav, setShowNav] = useState(false);
+  const [hasLatest, setHasLatest] = useState(false);
+
+  const checkHasLatest = (id) => {
+    const latest = GetLocalData("latestAnnouncement");
+
+    if (!latest) return false;
+    return latest !== id;
+  };
+
+  useEffect(() => {
+    setInterval(async () => {
+      const announcements = await GetAllAnnouncements();
+      if (announcements.length > 0) {
+        const latest = announcements[0];
+
+        setHasLatest(checkHasLatest(latest.id));
+      }
+    }, 5000);
+  }, []);
   return (
     <>
       <div className="relative p-4 h-[80px] items-center">
@@ -47,6 +71,11 @@ function Header() {
                 <>
                   <div className="text-center w-auto font-bold hidden sm:block">
                     <Button
+                      icon={`${
+                        hasLatest &&
+                        "relative fa-solid fa-circle text-[10px] text-red-500 mr-1"
+                      }`}
+                      className="items-center flex"
                       onClick={() =>
                         RedirectTo(ApplicationConstants.ROUTE_ANNOUNCEMENT)
                       }
@@ -73,6 +102,15 @@ function Header() {
                       default
                     >
                       Reports
+                    </Button>
+                  </div>
+                  <div className="text-center w-auto mx-4">
+                    <Button
+                      onClick={() =>
+                        RedirectTo(ApplicationConstants.ROUTE_DONATION)
+                      }
+                    >
+                      Donate
                     </Button>
                   </div>
                 </>
@@ -223,7 +261,11 @@ function Header() {
           <>
             <div>
               <Button
-                className="text-lg border-b-2 w-[100%] text-left"
+                icon={`${
+                  hasLatest &&
+                  "relative fa-solid fa-circle text-[10px] text-red-500 mr-1"
+                }`}
+                className="text-lg border-b-2 w-[100%] text-left items-center flex"
                 onClick={() =>
                   RedirectTo(ApplicationConstants.ROUTE_ANNOUNCEMENT)
                 }

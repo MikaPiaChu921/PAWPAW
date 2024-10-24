@@ -13,11 +13,11 @@ namespace Straysafe.Backend.Controllers
         private readonly SessionSingleton _session = session;
 
         [HttpPost("submit")]
-        public IActionResult SubmitChat(ChatData chatData)
+        public async Task<IActionResult> SubmitChat(ChatData chatData)
         {
-            _chatDataRepository.AddAsync(chatData);
+            var success = await _chatDataRepository.AddAsync(chatData);
             _session.SetHasNewChat(chatData.ChatInfo, true);
-            return Ok(new { Message = "Success"});
+            return Ok(new { Message = success ? "Success" : "Fail"});
         }
 
         [HttpGet("getall")]

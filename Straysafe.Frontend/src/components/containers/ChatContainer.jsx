@@ -176,7 +176,7 @@ function ChatContainer({ minified = false }) {
      */
   }, [chatHubConnection, chatInformation, chatDatas]);
 
-  const handleSubmitChat = () => {
+  const handleSubmitChat = async () => {
     if (inputMessage === "") return;
     const org = searchParams.get("og");
     const str = searchParams.get("st");
@@ -188,9 +188,9 @@ function ChatContainer({ minified = false }) {
       type: "msg",
     });
 
-    SubmitChat(payload);
+    let resp = await SubmitChat(payload);
     setTimeout(() => {
-      setInputMessage("");
+      if (resp.message === "Success") setInputMessage("");
     }, 100);
   };
 
@@ -202,6 +202,11 @@ function ChatContainer({ minified = false }) {
             showChathead ? "top-0" : "top-[-100vh]"
           } absolute h-[100vh] w-full items-center border-b-2 z-[99] p-3 bg-white overflow-y-auto shadow-lg transition-all duration-200`}
         >
+          <Button
+            icon={"fa-solid fa-xmark"}
+            onClick={() => setShowChathead(false)}
+            default
+          />
           <h1 className="text-left primary-1 text-[30px]">Chats</h1>
           {allChatInformations &&
             allChatInformations.map((chatInfo) => {

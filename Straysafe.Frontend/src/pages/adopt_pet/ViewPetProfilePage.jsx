@@ -55,7 +55,7 @@ const ViewPetProfilePage = () => {
           </div>
         </div>
         <div className="relative sm:w-[700px] left-[50%] translate-x-[-50%] bg-[#7adee9] rounded-[20px] p-10">
-          {GetProfileInformation()?.role ===
+          {/* {GetProfileInformation()?.role ===
             AuthConstants.ROLE_ORGANIZATION && (
             <div className="relative w-100 flex justify-end">
               <div>
@@ -68,7 +68,7 @@ const ViewPetProfilePage = () => {
                 />
               </div>
             </div>
-          )}
+          )} */}
           <div className="overflow-hidden rounded-[35px]">
             <img
               className="w-full h-[300px] object-cover"

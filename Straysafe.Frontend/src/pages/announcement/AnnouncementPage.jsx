@@ -7,6 +7,7 @@ import AddOrEditAnnouncementModal from "../../components/modals/AddOrEditAnnounc
 import { GetAllAnnouncements } from "../../components/utilities/services/DataHandler";
 import ViewAnnouncementModal from "../../components/modals/ViewAnnouncementModal";
 import { GetProfileInformation } from "../../components/utilities/services/AuthenticationHandler";
+import { SaveLocalData } from "../../components/utilities/services/LocalDataHandler";
 
 function AnnouncementPage() {
   const [showModal, setShowModal] = useState(false);
@@ -22,6 +23,10 @@ function AnnouncementPage() {
     (async () => {
       const announcements = await GetAllAnnouncements();
       setAnnouncements(announcements);
+
+      if (announcements.length > 0) {
+        SaveLocalData("latestAnnouncement", announcements[0].id);
+      }
     })();
   };
 

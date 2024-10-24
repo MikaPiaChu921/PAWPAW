@@ -4,20 +4,21 @@ using Straysafe.Backend.Data;
 
 namespace Straysafe.Backend.Services.Repositories
 {
-    public class ChatDataRepository(DatabaseContext databaseContext) : IRepository<ChatData>
+    public class ChatDataRepository(DatabaseContext databaseContext, ILogger<ChatDataRepository> logger) : IRepository<ChatData>
     {
         private readonly DatabaseContext _databaseContext = databaseContext;
+        private readonly ILogger<ChatDataRepository> _logger = logger;
         public async Task<bool> AddAsync(ChatData entity)
         {
             try
             {
                 var res = await _databaseContext.ChatData.AddAsync(entity);
-                var e = res.Entity;
-                await _databaseContext.SaveChangesAsync();
-                return res != null; ;
+                return (await _databaseContext.SaveChangesAsync()) == 1;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
+                _logger.LogInformation(ex.StackTrace);
                 return false;
             }
         }

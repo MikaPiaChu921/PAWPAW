@@ -35,45 +35,49 @@ function LoginPage() {
               src={ApplicationConstants.StraySafeLogo1}
             />
           </div>
-          <div className="m-auto justify-center ">
-            <div className="my-2">
-              <Input
-                containerClassname={"w-[280px]"}
-                placeholder={"Email"}
-                type="email"
-                icon={"fa-solid fa-user"}
-                value={email}
-                set={setEmail}
-              />
+          <form>
+            <div className="m-auto justify-center ">
+              <div className="my-2">
+                <Input
+                  containerClassname={"w-[280px]"}
+                  placeholder={"Email"}
+                  type="email"
+                  icon={"fa-solid fa-user"}
+                  value={email}
+                  set={setEmail}
+                  autoComplete={"username"}
+                />
+              </div>
+              <div className="my-2">
+                <Input
+                  containerClassname={"w-[280px]"}
+                  type={showPassword ? "text" : "password"}
+                  placeholder={"Password"}
+                  icon={"fa-solid fa-eye"}
+                  value={password}
+                  set={setPassword}
+                  iconClicked={showPasswordCallback}
+                  autoComplete={"current-password"}
+                />
+              </div>
             </div>
-            <div className="my-2">
-              <Input
-                containerClassname={"w-[280px]"}
-                type={showPassword ? "text" : "password"}
-                placeholder={"Password"}
-                icon={"fa-solid fa-eye"}
-                value={password}
-                set={setPassword}
-                iconClicked={showPasswordCallback}
-              />
+            <div className="relative my-2 grid grid-cols-2 w-[300px]">
+              <div className="col-span-1">
+                <Input
+                  type="checkbox"
+                  className={"brand-orange text-[13px] h-5"}
+                  placeholder={"forgot password"}
+                  checked={rememberMe}
+                  onClick={rememberMeCallback}
+                >
+                  Remember me
+                </Input>
+              </div>
+              <div className="col-span-1 brand-orange text-[13px] h-5 text-center">
+                <a>Forgot Password?</a>
+              </div>
             </div>
-          </div>
-          <div className="relative my-2 grid grid-cols-2 w-[300px]">
-            <div className="col-span-1">
-              <Input
-                type="checkbox"
-                className={"brand-orange text-[13px] h-5"}
-                placeholder={"forgot password"}
-                checked={rememberMe}
-                onClick={rememberMeCallback}
-              >
-                Remember me
-              </Input>
-            </div>
-            <div className="col-span-1 brand-orange text-[13px] h-5 text-center">
-              <a>Forgot Password?</a>
-            </div>
-          </div>
+          </form>
 
           <div className="text-center mt-8">
             <Button className={"w-[150px] my-2"} onClick={handleLogin}>

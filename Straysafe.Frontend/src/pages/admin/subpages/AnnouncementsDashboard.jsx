@@ -67,7 +67,7 @@ function AnnouncementsDashboard() {
               Announcements
             </h3>
             <div />
-            <div className="col-span-2">
+            {/* <div className="col-span-2">
               <Input
                 containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
                 type="text"
@@ -77,7 +77,7 @@ function AnnouncementsDashboard() {
                   alert("search");
                 }}
               />
-            </div>
+            </div> */}
           </div>
           <div className="text-right">
             <Button className="text-sm rounded-full" onClick={handleShowModal}>

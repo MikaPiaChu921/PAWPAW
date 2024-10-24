@@ -49,8 +49,8 @@ export const AuthConstants = {
     ROLE_ADMIN: "Admin"
 }
 
-export const APIUrl = "http://localhost:8080";
-export const ChatHubUrl = "http://localhost:8080/chathub"
+export const APIUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:8080`;
+export const ChatHubUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:8080/chathub`;
 
 export const API_LINKS = {
     USER_GET: (id) => APIUrl + `/user/get?id=${id}`,

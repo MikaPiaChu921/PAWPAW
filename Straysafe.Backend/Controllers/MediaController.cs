@@ -76,6 +76,7 @@ namespace Straysafe.Backend.Controllers
                 {
                     if (file.Contains(fileName, StringComparison.OrdinalIgnoreCase))
                     {
+                        if (file.Contains("org-"+ fileName) && isProfile) continue;
                         var fileExtension = file.Split(fileName)[1];
                         directoryFileName = fileName + fileExtension;
                         break;
@@ -89,15 +90,22 @@ namespace Straysafe.Backend.Controllers
                 directoryFileName = "DEFAULT_PROFILE.png";
             }
 
-                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "files", directoryFileName);
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "files", directoryFileName);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var contentType))
             {
                 contentType = "application/octet-stream";
             }
 
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            return File(fileBytes, contentType);
+            try
+            {
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                return File(fileBytes, contentType);
+            }
+            catch
+            {
+                return NoContent();
+            }
         }
     }
 }

@@ -103,7 +103,7 @@ function ReportsDashboard() {
             Reports
           </h3>
           <div />
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <Input
               containerClassname="w-max-[400px] w-min-[200px] w-[400px]"
               type="text"
@@ -113,7 +113,7 @@ function ReportsDashboard() {
                 alert("search");
               }}
             />
-          </div>
+          </div> */}
         </div>
         <div className="grid grid-cols-3 gap-1 justify-items-center my-8">
           <DashboardReportCard title="Found Pets" value={foundPetCount} />

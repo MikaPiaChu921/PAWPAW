@@ -40,8 +40,6 @@ function ProfilePage() {
         setContactNumber(user.contactNumber);
         setFirstName(user.firstName);
         setLastName(user.lastName);
-
-        console.log(user);
       })();
     }
   }, [currentLoggedInUser, loggedInUser]);
@@ -137,19 +135,29 @@ function ProfilePage() {
         <div>
           <p className="font-bold text-lg p-2 text-center">Change Password</p>
           <p className="text-xs p-2">Current Password</p>
-          <Input
-            type="password"
-            placeholder="Current Password"
-            set={setCurrentPassword}
-            value={currentPassword}
-          />
-          <p className="text-xs p-2">New Password</p>
-          <Input
-            type="password"
-            placeholder="New Password"
-            set={setNewPassword}
-            value={newPassword}
-          />
+          <form>
+            <input
+              className="hidden"
+              type="text"
+              autoComplete="username"
+              hidden
+            />
+            <Input
+              type="password"
+              placeholder="Current Password"
+              set={setCurrentPassword}
+              value={currentPassword}
+              autoComplete={"current-password"}
+            />
+            <p className="text-xs p-2">New Password</p>
+            <Input
+              type="password"
+              placeholder="New Password"
+              set={setNewPassword}
+              value={newPassword}
+              autoComplete={"new-password"}
+            />
+          </form>
           <div className="text-center mt-4">
             <Button
               className="bg-orange-500 mr-1"
@@ -160,7 +168,7 @@ function ProfilePage() {
             <Button
               className="bg-red-500"
               onClick={() => {
-                setShowSaveModal(false);
+                setShowChangePasswordModal(false);
               }}
             >
               Cancel
