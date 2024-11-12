@@ -8,28 +8,92 @@ import {
   RetrieveReports,
 } from "../../../components/utilities/services/DataHandler";
 import { getMonth } from "../../../components/utilities/PageUtils";
+import {
+  GetMostReportOwnedByOrganization,
+  GetNumberOfReportTypes,
+  GetNumberOfUsersByRoles,
+  GetTotalRevenue,
+} from "../../../components/utilities/services/ReportsUtil";
 
 function ReportsDashboard() {
-  const [reportsChart, setReportChart] = useState(null);
-  const [foundPetCount, setFoundPetCount] = useState(0);
-  const [lostPetCount, setLostPetCount] = useState(0);
-  const [strayPetCount, setStrayPetCount] = useState(0);
-  const [chartDataset, setChartDataset] = useState(null);
-  const [notifications, setNotifications] = useState([]);
+  const [usersPerRole, setUsersPerRole] = useState({
+    Strayver: 0,
+    Organization: 0,
+  });
+  const [userRoleChart, setUserRoleChart] = useState(null);
+
+  const [reportedType, setReportedType] = useState({
+    stray: 0,
+    lost: 0,
+    found: 0,
+  });
+  const [reportedTypeChart, setReportedTypeChart] = useState(null);
+
+  const [revenueData, setRevenueData] = useState([[], 0]);
+  const [revenueChart, setRevenueChart] = useState(null);
+
+  const [orgData, setOrgData] = useState([null, 0]);
+  const [orgChart, setOrgChart] = useState(null);
 
   useEffect(() => {
     (async function () {
-      const data = chartDataset;
+      if (
+        !userRoleChart &&
+        (usersPerRole.Organization > 0 || usersPerRole.Strayver > 0)
+      ) {
+        setUserRoleChart(
+          new Chart("graph-user-roles", {
+            type: "pie",
+            data: {
+              labels: ["Strayver", "Organization"],
+              datasets: [
+                {
+                  label: "Number of users",
+                  data: [usersPerRole.Strayver, usersPerRole.Organization],
+                },
+              ],
+            },
+          })
+        );
+      }
 
-      if (!reportsChart && chartDataset) {
-        setReportChart(
-          new Chart("graph-a", {
-            type: "bar",
+      if (
+        !reportedTypeChart &&
+        (reportedType.stray > 0 ||
+          reportedType.found > 0 ||
+          reportedType.lost > 0)
+      ) {
+        setReportedTypeChart(
+          new Chart("graph-reported-type", {
+            type: "doughnut",
+            data: {
+              labels: ["Stray", "Lost", "Found"],
+              datasets: [
+                {
+                  label: "Type of reports",
+                  data: [
+                    reportedType.stray,
+                    reportedType.lost,
+                    reportedType.found,
+                  ],
+                  backgroundColor: ["Orange", "Green", "Yellow"],
+                },
+              ],
+            },
+          })
+        );
+      }
+
+      if (!revenueChart && revenueData[1] > 0) {
+        var data = revenueData[0].reverse();
+        setRevenueChart(
+          new Chart("graph-revenue", {
+            type: "line",
             data: {
               labels: data.map((row) => row.month),
               datasets: [
                 {
-                  label: "Reported Strays per Month",
+                  label: "Revenue for the past 5 months",
                   data: data.map((row) => row.count),
                 },
               ],
@@ -37,61 +101,50 @@ function ReportsDashboard() {
           })
         );
       }
+      if (!orgChart && orgData[0]) {
+        setOrgChart(
+          new Chart("graph-org", {
+            type: "pie",
+            data: {
+              labels: orgData[0],
+              datasets: [
+                {
+                  label: "This organization associated # of reports",
+                  data: orgData[1],
+                },
+              ],
+            },
+          })
+        );
+      }
     })();
-  }, [reportsChart, chartDataset]);
+  }, [
+    usersPerRole,
+    userRoleChart,
+    reportedType,
+    reportedTypeChart,
+    revenueChart,
+    revenueData,
+    orgChart,
+    orgData,
+  ]);
 
   useEffect(() => {
     (async () => {
-      // load reports
-      var reports = await RetrieveReports();
+      // load user roles
+      var userRoles = await GetNumberOfUsersByRoles();
+      setUsersPerRole(userRoles);
+      // load reported type
+      var reportedType = await GetNumberOfReportTypes();
+      setReportedType(reportedType);
 
-      setFoundPetCount(
-        reports.filter((r) => r.reportType.toLowerCase().includes("found"))
-          .length
-      );
-      setLostPetCount(
-        reports.filter((r) => r.reportType.toLowerCase().includes("lost"))
-          .length
-      );
-      setStrayPetCount(
-        reports.filter((r) => r.reportType.toLowerCase().includes("stray"))
-          .length
-      );
-      const reportedStray = reports.filter((r) =>
-        r.reportType.toLowerCase().includes("stray")
-      );
+      // load donations
+      var donations = await GetTotalRevenue();
+      setRevenueData(donations);
 
-      const currentMonthIndex = new Date().getMonth();
-      const kv = {
-        [`${getMonth(currentMonthIndex)}`]: 0,
-        [`${getMonth(currentMonthIndex - 1)}`]: 0,
-        [`${getMonth(currentMonthIndex - 2)}`]: 0,
-        [`${getMonth(currentMonthIndex - 3)}`]: 0,
-        [`${getMonth(currentMonthIndex - 4)}`]: 0,
-      };
-
-      for (let report of reportedStray) {
-        let existingMonth =
-          kv[getMonth(new Date(report.reportDate).getMonth())];
-
-        if (existingMonth >= 0) {
-          kv[getMonth(new Date(report.reportDate).getMonth())] += 1;
-        }
-      }
-      let arrDt = [];
-
-      for (let x in kv) {
-        arrDt.push({ month: x, count: kv[x] });
-      }
-
-      setChartDataset(arrDt.reverse());
-
-      // load notifications
-      const notifications = await GetNotifications();
-      const sorted = notifications.sort(
-        (a, b) => new Date(b.created) - new Date(a.created)
-      );
-      setNotifications(sorted.slice(0, 10));
+      // load reports owned by org
+      var orgOwnRep = await GetMostReportOwnedByOrganization();
+      setOrgData(orgOwnRep);
     })();
   }, []);
 
@@ -116,25 +169,41 @@ function ReportsDashboard() {
           </div> */}
         </div>
         <div className="grid grid-cols-3 gap-1 justify-items-center my-8">
-          <DashboardReportCard title="Found Pets" value={foundPetCount} />
+          {/* <DashboardReportCard title="Found Pets" value={foundPetCount} />
           <DashboardReportCard title="Lost Pets" value={lostPetCount} />
-          <DashboardReportCard title="Reported Strays" value={strayPetCount} />
+          <DashboardReportCard title="Reported Strays" value={strayPetCount} /> */}
         </div>
 
         <div className="grid grid-cols-2 justify-items-center my-8">
-          <div className="primary-1 text-left shadow-md w-[350px] p-4 md:col-span-1 col-span-2">
-            <p className="text-[20px] font-bold">NOTIFICATIONS</p>
-            {notifications.map((notif, index) => (
-              <p
-                key={index}
-                className="text-[12px] mt-2 border-b-2 border-gray-300"
-              >
-                {notif.description}
-              </p>
-            ))}
+          <div className="primary-1 text-left shadow-md w-100 p-4 md:col-span-1 col-span-2">
+            <h1 className="text-center font-bold">
+              Total Donation{" "}
+              <a className="text-green-500">(PHP {revenueData[1]})</a>
+            </h1>
+            <canvas className=" w-100 h-[300px]" id="graph-revenue"></canvas>
           </div>
-          <div className="primary-1 text-left shadow-md w-[350px] p-4 md:col-span-1 col-span-2">
-            <canvas id="graph-a"></canvas>
+          <div className="primary-1 text-left shadow-md w-100 p-4 md:col-span-1 col-span-2">
+            <h1 className="text-center font-bold">
+              Top reports associated by organizations
+            </h1>
+            <canvas className=" w-100 h-[400px]" id="graph-org"></canvas>
+          </div>
+          <div className="primary-1 text-left shadow-md w-100 p-4 md:col-span-1 col-span-2">
+            <h1 className="text-center font-bold">
+              Number of registered users (
+              {usersPerRole.Organization + usersPerRole.Strayver})
+            </h1>
+            <canvas className=" w-100" id="graph-user-roles"></canvas>
+          </div>
+          <div className="primary-1 text-left shadow-md w-100 p-4 md:col-span-1 col-span-2">
+            <h1 className="text-center font-bold">
+              Number of reports per type (
+              {reportedType.lost + reportedType.found + reportedType.stray})
+            </h1>
+            <canvas
+              className=" w-100 h-[300px]"
+              id="graph-reported-type"
+            ></canvas>
           </div>
         </div>
       </PageContainer>

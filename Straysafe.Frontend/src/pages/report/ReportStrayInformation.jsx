@@ -5,7 +5,10 @@ import { PetData } from "../../components/utilities/models/PetData";
 import MobileView from "../../components/containers/MobileView";
 import PageContainer from "../../components/containers/PageContainer";
 import Header from "../../components/headers/Header";
-import { RetrieveSingleReport } from "../../components/utilities/services/DataHandler";
+import {
+  DeleteReport,
+  RetrieveSingleReport,
+} from "../../components/utilities/services/DataHandler";
 import {
   API_LINKS,
   ApplicationConstants,
@@ -34,6 +37,21 @@ function ReportStrayInformation() {
     }
     RetrieveData();
   }, [parameter]);
+
+  const handleRemoveReport = async () => {
+    const confirmation = confirm(
+      "Are you sure you want to delete this report?"
+    );
+
+    if (!confirmation) return;
+
+    const success = await DeleteReport(parameter.id);
+
+    if (success) {
+      alert("Report has been deleted");
+      RedirectTo(ApplicationConstants.ROUTE_REPORT_STRAY_HISTORY);
+    }
+  };
 
   return (
     <div>
@@ -174,6 +192,9 @@ function ReportStrayInformation() {
               >
                 {petData.status}
               </div>
+            </div>
+            <div className="text-center py-2">
+              <Button onClick={handleRemoveReport}>Remove Report</Button>
             </div>
           </div>
         </MobileView>

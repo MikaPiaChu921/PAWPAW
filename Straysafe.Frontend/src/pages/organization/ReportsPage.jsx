@@ -7,11 +7,12 @@ import InformationReportView from "./views/InformationReportView";
 import FoundView from "./views/FoundView";
 import LostView from "./views/LostView";
 import PostedView from "./views/PostedView";
+import { useParams, useSearchParams } from "react-router-dom";
 
 function View({ view, data, setView, setData }) {
   if (view === "stray")
     return <StrayView setView={setView} setData={setData} />;
-  if (view === "info") return <InformationReportView data={data} />;
+  if (view === "info") return <InformationReportView data={data} view={view} />;
   if (view === "found")
     return <FoundView setView={setView} setData={setData} />;
   if (view === "lost") return <LostView setView={setView} setData={setData} />;
@@ -26,7 +27,8 @@ function btnActive(name, view) {
   return "w-full bg-white border-[#1794A1] border-[1px] rounded-lg font-bold";
 }
 function ReportsPage() {
-  const [view, setView] = useState("stray");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [view, setView] = useState(searchParams.get("v") ?? "stray");
   const [data, setData] = useState(null);
 
   return (

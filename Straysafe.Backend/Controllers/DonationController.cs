@@ -12,7 +12,7 @@ namespace Straysafe.Backend.Controllers
         [HttpGet("getAll")]
         public IActionResult GetDonations()
         {
-            return Ok(new { Message = "Retrieved Donation Data", Success = true, Data = DonationRepository.GetAll() });
+            return Ok(new { Message = "Retrieved Donation Data", Success = true, Data = DonationRepository.GetAll().OrderBy(d => d.IssueDate) });
         }
 
         [HttpPost("add")]

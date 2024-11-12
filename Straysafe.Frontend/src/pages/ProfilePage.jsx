@@ -29,6 +29,7 @@ function ProfilePage() {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (currentLoggedInUser && !loggedInUser) {
@@ -40,6 +41,7 @@ function ProfilePage() {
         setContactNumber(user.contactNumber);
         setFirstName(user.firstName);
         setLastName(user.lastName);
+        setEmail(user.email);
       })();
     }
   }, [currentLoggedInUser, loggedInUser]);
@@ -61,7 +63,8 @@ function ProfilePage() {
       loggedInUser.firstName !== firstName ||
       loggedInUser.lastName !== lastName ||
       loggedInUser.address !== address ||
-      loggedInUser.contactNumber !== contactNumber
+      loggedInUser.contactNumber !== contactNumber ||
+      loggedInUser.email !== email
     )
       setShowSaveModal(true);
   };
@@ -72,6 +75,7 @@ function ProfilePage() {
     loggedInUser.contactNumber = contactNumber;
     loggedInUser.address = address;
     loggedInUser.password = newPassword;
+    loggedInUser.email = email;
 
     let accRepo = new AccountRepository();
     accRepo.UpdateAccount(loggedInUser);
@@ -257,7 +261,17 @@ function ProfilePage() {
               <i className="fa-solid fa-envelope text-gray-500"></i>
             </div>
             <div className="col-span-8">
-              <p>{loggedInUser?.email}</p>
+              {editMode ? (
+                <Input
+                  containerClassname="relative left-[50%] translate-x-[-50%] text-sm h-full w-100"
+                  className="h-[24px] w-full border-none text-center"
+                  placeholder="Email Address"
+                  set={setEmail}
+                  value={email}
+                />
+              ) : (
+                <p>{loggedInUser?.email}</p>
+              )}
             </div>
           </div>
 

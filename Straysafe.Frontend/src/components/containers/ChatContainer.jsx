@@ -264,7 +264,6 @@ function ChatContainer({ minified = false }) {
                       !chatInfo.metadata.includes(userProfile.id)
                     )
                       return <div key={chatInfo.id}></div>;
-                    console.log(chatInfo.sender);
                     return (
                       <ChatUser
                         key={chatInfo.id}

@@ -227,35 +227,34 @@ function Header() {
                 Adopt a Pet
               </Button>
             </div>
+            <div>
+              <Button
+                className="text-lg border-b-2 w-[100%] text-left"
+                onClick={() =>
+                  RedirectTo(
+                    ApplicationConstants.ROUTE_PET_REPORT_PAGE("lost-pets")
+                  )
+                }
+                default
+              >
+                Lost Pets
+              </Button>
+            </div>
+            <div>
+              <Button
+                className="text-lg border-b-2 w-[100%] text-left"
+                onClick={() =>
+                  RedirectTo(
+                    ApplicationConstants.ROUTE_PET_REPORT_PAGE("found-pets")
+                  )
+                }
+                default
+              >
+                Found Pets
+              </Button>
+            </div>
           </>
         )}
-
-        <div>
-          <Button
-            className="text-lg border-b-2 w-[100%] text-left"
-            onClick={() =>
-              RedirectTo(
-                ApplicationConstants.ROUTE_PET_REPORT_PAGE("lost-pets")
-              )
-            }
-            default
-          >
-            Lost Pets
-          </Button>
-        </div>
-        <div>
-          <Button
-            className="text-lg border-b-2 w-[100%] text-left"
-            onClick={() =>
-              RedirectTo(
-                ApplicationConstants.ROUTE_PET_REPORT_PAGE("found-pets")
-              )
-            }
-            default
-          >
-            Found Pets
-          </Button>
-        </div>
 
         {loggedInAccount?.role === AuthConstants.ROLE_STRAYVER && (
           <>

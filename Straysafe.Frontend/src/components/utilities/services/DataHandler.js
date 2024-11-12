@@ -210,3 +210,17 @@ export const SubmitDonation = async (donation) => {
     const data = await response.json();
     return data;
 }
+
+/**
+ * 
+ * @param {string} id 
+ * @returns {Promise<Boolean>}
+ */
+export const DeleteReport = async (id) => {
+    const content = {
+        method: "DELETE"
+    }
+    const response = await fetch(API_LINKS.REPORT_STRAY_DELETE(id), content);
+    const success = (await response.json()).success;
+    return success;
+}

@@ -30,6 +30,10 @@ function ViewAnnouncementModal({
   );
   const [allowChat, setAllowChat] = useState(true);
   const [hasVideo, setHasVideo] = useState(false);
+  const [report, setReport] = useState(null);
+  const [organization, setOrganization] = useState(
+    new UserData({ uid: "", firstName: "---", lastName: "" })
+  );
 
   useEffect(() => {
     (async () => {
@@ -40,6 +44,14 @@ function ViewAnnouncementModal({
         if (report) {
           if (report.status.toLowerCase().includes("adopted"))
             setAllowChat(false);
+          setReport(report);
+
+          if (report) {
+            const org = await RetrieveSingleAccount(report.organization);
+            setOrganization(org);
+          } else {
+            setOrganization(null);
+          }
         }
       } catch (e) {
         /**/
@@ -57,7 +69,7 @@ function ViewAnnouncementModal({
   }, [announcementData]);
   return (
     <div
-      className={`absolute top-0 left-0 w-[100%] h-[100%] ${
+      className={`sticky top-0 left-0 w-[100%] h-screen ${
         !removeBlurBg && "bg-[rgba(0,0,0,0.1)]"
       } z-[99999]`}
     >
@@ -108,8 +120,10 @@ function ViewAnnouncementModal({
         </div>
         {GetProfileInformation() &&
           GetProfileInformation().id !== announcementData.postedBy &&
+          GetProfileInformation().id !== report?.organization &&
           allowChat &&
-          !disableChat && (
+          !disableChat &&
+          report !== null && (
             <div className="text-center text-sm mb-3">
               <Button
                 icon={"fa-solid fa-paper-plane"}
@@ -118,12 +132,21 @@ function ViewAnnouncementModal({
                     `${
                       ApplicationConstants.ROUTE_CHAT_STRAYVER
                     }?tp=Announcement: ${announcementData.title}&og=${
-                      announcementData.postedBy
+                      organization ? organization.id : announcementData.postedBy
                     }&st=${GetProfileInformation()?.id ?? "null"}`
                   );
                 }}
               >
-                Chat {reporter.firstName} {reporter.lastName}
+                Chat{" "}
+                {organization ? (
+                  <>
+                    {organization.firstName} {organization.lastName}
+                  </>
+                ) : (
+                  <>
+                    {reporter.firstName} {reporter.lastName}
+                  </>
+                )}
               </Button>
             </div>
           )}

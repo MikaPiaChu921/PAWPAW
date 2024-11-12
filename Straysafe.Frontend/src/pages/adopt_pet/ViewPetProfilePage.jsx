@@ -10,7 +10,10 @@ import {
 } from "../../contants/ApplicationConstants";
 import { PetData } from "../../components/utilities/models/PetData";
 import { useParams } from "react-router-dom";
-import { RetrieveSingleReport } from "../../components/utilities/services/DataHandler";
+import {
+  RetrieveSingleAccount,
+  RetrieveSingleReport,
+} from "../../components/utilities/services/DataHandler";
 import { GetProfileInformation } from "../../components/utilities/services/AuthenticationHandler";
 
 const ViewPetProfilePage = () => {
@@ -27,6 +30,7 @@ const ViewPetProfilePage = () => {
       remarks: "Dead",
     })
   );
+  const [organizationData, setOrganizationData] = useState(null);
 
   useEffect(() => {
     async function API_CALL() {
@@ -34,6 +38,13 @@ const ViewPetProfilePage = () => {
 
       const petProfile = await RetrieveSingleReport(profileId);
       setPetData(petProfile);
+
+      if (petProfile.organization) {
+        const organization = await RetrieveSingleAccount(
+          petProfile.organization
+        );
+        setOrganizationData(organization);
+      }
     }
 
     API_CALL();
@@ -75,6 +86,9 @@ const ViewPetProfilePage = () => {
               src={API_LINKS.MEDIA_DOWNLOAD(petData.id)}
             />
           </div>
+          <h1 className="text-center text-xl py-8 primary-1">
+            Report Information
+          </h1>
           <div className="text-center flex justify-center">
             <div className="grid grid-cols-2 w-[400px] gap-4">
               <p className="col-span-1 text-right">Name:</p>
@@ -117,24 +131,63 @@ const ViewPetProfilePage = () => {
               <p className="col-span-1 text-left">{petData.remarks}</p>
             </div>
           </div>
-
-          {/* Chat with user for adoption */}
-          {GetProfileInformation()?.role === AuthConstants.ROLE_STRAYVER && (
-            <div className="w-full text-center my-8">
-              <Button
-                onClick={() => {
-                  RedirectTo(
-                    `${ApplicationConstants.ROUTE_CHAT_STRAYVER}?tp=Adoption: ${
-                      petData.name
-                    }&og=${petData.organization}&st=${
-                      GetProfileInformation()?.id ?? "null"
-                    }`
-                  );
-                }}
-              >
-                Message Organization
-              </Button>
+          <div className="text-center flex justify-center">
+            <div className="grid grid-cols-2 w-[400px] gap-4">
+              <p className="col-span-1 text-right">Report:</p>
+              <p className="col-span-1 text-left">{petData.reportType}</p>
             </div>
+          </div>
+          <div className="text-center flex justify-center">
+            <div className="grid grid-cols-2 w-[400px] gap-4">
+              <p className="col-span-1 text-right">Status:</p>
+              <p className="col-span-1 text-left">{petData.status}</p>
+            </div>
+          </div>
+
+          {organizationData && (
+            <>
+              <h1 className="text-center text-xl py-8 primary-1">
+                Organization Data
+              </h1>
+              <div className="text-center flex justify-center">
+                <div className="grid grid-cols-2 w-[400px] gap-4">
+                  <p className="col-span-2 text-center">
+                    {organizationData.firstName} {organizationData.lastName}
+                  </p>
+                  <p className="col-span-1 text-right font-bold">
+                    {organizationData.email}
+                  </p>
+                  <p className="col-span-1 text-left">
+                    Contact #(
+                    <a className="font-bold">
+                      {organizationData.contactNumber}
+                    </a>
+                    )
+                  </p>
+                  <p className="col-span-1 text-right">Address:</p>
+                  <p className="col-span-1 text-left">
+                    {organizationData.address}
+                  </p>
+                </div>
+              </div>
+
+              {/* Chat with user for adoption */}
+              <div className="w-full text-center my-8">
+                <Button
+                  onClick={() => {
+                    RedirectTo(
+                      `${
+                        ApplicationConstants.ROUTE_CHAT_STRAYVER
+                      }?tp=Adoption: ${petData.name}&og=${
+                        petData.organization
+                      }&st=${GetProfileInformation()?.id ?? "null"}`
+                    );
+                  }}
+                >
+                  Message Organization
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </PageContainer>

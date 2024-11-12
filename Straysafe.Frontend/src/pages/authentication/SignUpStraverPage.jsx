@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import Header from "../../components/headers/Header";
 import Input from "../../components/formElements/Input";
 import Button from "../../components/buttons/Button";
-import { RedirectTo } from "../../components/utilities/PageUtils";
+import {
+  minOfLength,
+  RedirectTo,
+  validateEmail,
+} from "../../components/utilities/PageUtils";
 import { UserData } from "../../components/utilities/models/UserData";
 import { RegisterStraver } from "../../components/utilities/services/AuthenticationHandler";
 import { ApplicationConstants } from "../../contants/ApplicationConstants";
@@ -29,6 +33,36 @@ function SignUpStraverPage() {
       contactNumber: contactNumber,
       address,
     });
+
+    if (!validateEmail(email)) {
+      alert("Invalid Email Format");
+      return;
+    }
+
+    if (!minOfLength(password, 5)) {
+      alert("Password Must be minimum of 5 characters");
+      return;
+    }
+
+    if (!minOfLength(lastname, 2)) {
+      alert("Lastname Must be minimum of 2 characters");
+      return;
+    }
+
+    if (!minOfLength(firstname, 2)) {
+      alert("Password Must be minimum of 2 characters");
+      return;
+    }
+
+    if (!minOfLength(contactNumber, 8)) {
+      alert("Contact Number Must be minimum of 8 characters");
+      return;
+    }
+
+    if (!minOfLength(address, 10)) {
+      alert("Address Must be minimum of 10 characters");
+      return;
+    }
 
     var result = await RegisterStraver(userData);
     alert(result);

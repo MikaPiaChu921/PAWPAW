@@ -22,7 +22,7 @@ namespace Straysafe.Backend
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<DatabaseContext>( options => options.UseSqlServer("Server=mssql;Database=PAWPAW-DB;Trusted_Connection=False;TrustServerCertificate=True;User Id=sa;Password=MsSql123"));
+            builder.Services.AddDbContext<DatabaseContext>( options => options.UseSqlServer(builder.Configuration.GetConnectionString("Local")));
 
             builder.Services.AddScoped<IRepository<User>, UserRepository>();
             builder.Services.AddScoped<IRepository<Reports>, ReportRepository>();

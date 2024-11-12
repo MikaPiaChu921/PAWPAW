@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PageContainer from "../../../components/containers/PageContainer";
 import DateRange from "../../../components/formElements/DateRange";
 import SelectInput from "../../../components/formElements/SelectInput";
@@ -38,50 +38,57 @@ function UserActivitiesDashboard() {
   const [reports, setReports] = useState([]);
   const [modalData, setModalData] = useState(undefined);
 
-  useEffect(() => {
-    (async () => {
-      let data = await RetrieveReports();
+  const refreshFn = useCallback(async () => {
+    let data = await RetrieveReports();
 
-      if (animalType && animalType !== "All") {
-        data = data.filter(
-          (d) => d.animalType.toLowerCase() === animalType.toLowerCase()
-        );
+    if (animalType && animalType !== "All") {
+      data = data.filter(
+        (d) => d.animalType.toLowerCase() === animalType.toLowerCase()
+      );
+    }
+
+    if (reportType && reportType !== "All") {
+      data = data.filter(
+        (d) => d.reportType.toLowerCase() === reportType.toLowerCase()
+      );
+    }
+
+    if (dateFrom || dateTo) {
+      let df = new Date(dateFrom ?? new Date());
+      let dt = new Date(dateTo ?? CreateDateTo());
+
+      data = data.filter((d) =>
+        CheckDateBetween(df.toISOString(), dt.toISOString(), d.reportDate)
+      );
+    }
+
+    // add userdata to report
+    let accRepo = new AccountRepository();
+    const users = await accRepo.GetAccounts();
+
+    for (let rep of data) {
+      rep.reporter = users.filter((a) => a.id === rep.reporter)[0];
+
+      if (rep.organization) {
+        rep.organization = users.filter((a) => a.id === rep.organization)[0];
       }
+    }
 
-      if (reportType && reportType !== "All") {
-        data = data.filter(
-          (d) => d.reportType.toLowerCase() === reportType.toLowerCase()
-        );
-      }
-
-      if (dateFrom || dateTo) {
-        let df = new Date(dateFrom ?? new Date());
-        let dt = new Date(dateTo ?? CreateDateTo());
-
-        data = data.filter((d) =>
-          CheckDateBetween(df.toISOString(), dt.toISOString(), d.reportDate)
-        );
-      }
-
-      // add userdata to report
-      let accRepo = new AccountRepository();
-      const users = await accRepo.GetAccounts();
-
-      for (let rep of data) {
-        rep.reporter = users.filter((a) => a.id === rep.reporter)[0];
-
-        if (rep.organization) {
-          rep.organization = users.filter((a) => a.id === rep.organization)[0];
-        }
-      }
-
-      setReports(data);
-    })();
+    setReports(data);
   }, [dateFrom, dateTo, animalType, reportType]);
+
+  useEffect(() => {
+    refreshFn();
+  }, [refreshFn]);
+
   return (
     <>
       {modalData && (
-        <ViewReportDetailModal reportData={modalData} set={setModalData} />
+        <ViewReportDetailModal
+          reportData={modalData}
+          set={setModalData}
+          refresh={refreshFn}
+        />
       )}
       <div className="mb-4">
         <PageContainer>

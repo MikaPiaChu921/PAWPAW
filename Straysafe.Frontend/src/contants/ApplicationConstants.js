@@ -14,7 +14,7 @@ export const ApplicationConstants = {
     UserActivityCardImg,
     DonationQr,
     SampleCardImg,
-    ROUTE_LOGIN: "login",
+    ROUTE_LOGIN: "/login",
     ROUTE_LANDING: "/",
     ROUTE_SIGNUP_AS_STRAVER: "/sign-up-as-straver",
     ROUTE_SIGNUP_AS_ORGANIZATION: "/sign-up-as-organization",
@@ -49,8 +49,8 @@ export const AuthConstants = {
     ROLE_ADMIN: "Admin"
 }
 
-export const APIUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:8080`;
-export const ChatHubUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:8080/chathub`;
+export const APIUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:${import.meta.env.VITE_API_BASE_URL_PORT || "8080"}`;
+export const ChatHubUrl = `http://${import.meta.env.VITE_API_BASE_URL || "localhost"}:${import.meta.env.VITE_API_BASE_URL_PORT || "8080"}/chathub`;
 
 export const API_LINKS = {
     USER_GET: (id) => APIUrl + `/user/get?id=${id}`,

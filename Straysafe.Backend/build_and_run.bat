@@ -1,0 +1,1 @@
+dotnet run Straysafe.Backend.csproj

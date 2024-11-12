@@ -4,10 +4,12 @@ import {
   RetrieveReports,
   RetrieveSingleAccount,
 } from "../../../components/utilities/services/DataHandler";
+import { useSearchParams } from "react-router-dom";
 
 function PostedView({ setView, setData }) {
   const [reports, setReport] = useState([]);
   const [actions, setActions] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   function getColor(val) {
     if (val.toLowerCase() === "reported") return "bg-green-200";
@@ -57,6 +59,8 @@ function PostedView({ setView, setData }) {
         actionData.push(() => {
           setView("info");
           setData(report);
+          searchParams.set("v", "posted");
+          setSearchParams(searchParams);
         });
       }
       setReport(reportData);
@@ -64,7 +68,7 @@ function PostedView({ setView, setData }) {
     }
 
     LoadReports();
-  }, [setData, setView]);
+  }, [setData, setView, searchParams, setSearchParams]);
   return (
     <div className="h-full col-span-2">
       <div className="relative left-[50%] translate-x-[-50%] w-[80%] h-[70%]">
